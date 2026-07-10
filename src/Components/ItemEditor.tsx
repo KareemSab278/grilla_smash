@@ -18,7 +18,6 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const [isMeal, setIsMeal] = useState<boolean>(!!cartItem.meal)
     const [selectedDrink, setSelectedDrink] = useState<Product | null>(cartItem.meal?.drink ?? null)
     const [selectedSide, setSelectedSide] = useState<Product | null>(cartItem.meal?.side ?? null)
-    const [selectedProtein, setSelectedProtein] = useState<Product | null>(null)
 
     const availableExtras = getAvailableExtras(cartItem.product)
     const isChicken = cartItem.product.category === 'chicken'
@@ -106,7 +105,6 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     alignItems: 'center',
-                                    cursor: 'pointer',
                                     padding: '9px 12px',
                                     borderRadius: 10,
                                     background: isExtraSelected(extra) ? 'rgba(247,147,30,0.08)' : '#1f1f1f',

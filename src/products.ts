@@ -36,8 +36,8 @@ const burgerAndWrapOptions = [
     { name: 'Pickles', price: 0.25 },
     { name: 'Jalapeños', price: 0.25 },
     { name: "Go Grill'a (+1 Chicken Patty)", price: 2.00, isProtein: true },
-    { name: 'Go Chimp (+2.5 oz)', price: 2.00, isProtein: true },
-    { name: 'Go Ape (+5 oz)', price: 4.00, isProtein: true },
+    { name: 'Go Chimp (+2.5 oz Beef)', price: 2.00, isProtein: true },
+    { name: 'Go Ape (+5 oz Beef)', price: 4.00, isProtein: true },
     { name: 'Extra Smash Sauce', price: 0.50 },
     { name: 'Extra Honey Mustard Sauce', price: 0.50 }
 ]
