@@ -1,4 +1,9 @@
 import { styles } from './Styles'
+import { ProductCard } from '../Components/Product'
+import type { CartItem, Product } from '../Types'
+import { Buttons } from '../Components/Buttons'
+import { getCartItemTotal } from '../Logic/editor'
+
 
 export const Footer = () => (
   <footer style={styles.footerSection}>
@@ -19,9 +24,7 @@ export const Footer = () => (
   </footer>
 )
 
-import { ProductCard } from '../Components/Product'
-import type { Product } from '../Types'
-import { Buttons } from '../Components/Buttons'
+
 
 export const Featured = ({ featuredProducts, onAddToCart }: {
   featuredProducts: Product[], onAddToCart: (product: Product) => void
@@ -137,4 +140,103 @@ export const About = () => (
       </div>
     </div>
   </section>
-)      
+)
+
+interface CartSectionProps {
+  cart: CartItem[],
+  updateQuantity: (productId: number, change: number) => void,
+  removeItem: (productId: number) => void,
+  subtotal: number,
+  total: number,
+  DELIVERY_FEE: number,
+  openCheckout: () => void,
+  closeModal: () => void,
+  onEditItem: (productId: number) => void,
+}
+
+export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => (
+  <>
+    <div style={styles.modalBody}>
+      {cart.length === 0 ? (
+        <div style={styles.cartEmpty}>
+          <p>Your cart is empty</p>
+          <p>Add some smash burgers!</p>
+        </div>
+      ) : (
+        cart.map((item) => (
+          <div style={styles.cartItem} key={item.product.id}>
+            <div style={{ ...styles.cartItemInfo, flex: 1 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                <h4 style={styles.cartItemName}>{item.product.name}</h4>
+                <button
+                  type="button"
+                  onClick={() => onEditItem(item.product.id)}
+                  style={styles.editButton}
+                >
+                  Edit
+                </button>
+              </div>
+
+              {/* Sauce */}
+              {item.sauceChoice && (
+                <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
+                  Sauce: {item.sauceChoice}
+                </p>
+              )}
+
+              {/* Extras */}
+              {item.extras && item.extras.length > 0 && (
+                <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
+                  + {item.extras.map(e => e.name).join(', ')}
+                </p>
+              )}
+
+              {/* Meal */}
+              {item.meal && (
+                <p style={{ margin: '3px 0 0', color: '#F7931E', fontSize: '0.76rem' }}>
+                  🍽 Meal: {item.meal.side.name} + {item.meal.drink.name}
+                </p>
+              )}
+
+              <p style={{ ...styles.cartItemPrice, marginTop: 5 }}>
+                £{getCartItemTotal(item).toFixed(2)}
+              </p>
+            </div>
+            <div style={{ ...styles.cartItemActions, marginLeft: 10 }}>
+              <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.product.id, -1)}>−</button>
+              <span>{item.quantity}</span>
+              <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.product.id, 1)}>+</button>
+              <button type="button" style={styles.removeBtn} onClick={() => removeItem(item.product.id)}>Remove</button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+    {cart.length > 0 && (
+      <div style={styles.modalFooter}>
+        <div style={styles.cartTotalRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
+        <div style={styles.cartTotalRow}><span>Delivery</span><span>£{DELIVERY_FEE.toFixed(2)}</span></div>
+        <div style={styles.cartTotalFinal}><span>Total</span><span>£{total.toFixed(2)}</span></div>
+        <div style={styles.cartActions}>
+          <Buttons.primary onClick={openCheckout} title="Checkout" />
+          <Buttons.secondary onClick={closeModal} title="Keep Shopping" />
+        </div>
+      </div>
+    )}
+  </>
+)
+
+export const SuccessMessage = ({ orderNumber, handleOrderAgain }: { orderNumber: number | null, handleOrderAgain: () => void }) =>
+  orderNumber !== null && (
+    <div style={styles.modalBody}>
+      <div style={styles.successScreen}>
+        <div style={styles.successIcon}>✓</div>
+        <h2>Thank You!</h2>
+        <p>Your order has been placed successfully.</p>
+        <div style={styles.orderNumber}>Order #{orderNumber}</div>
+        <p>Estimated delivery: <strong>30-45 mins</strong></p>
+        <br />
+        <Buttons.primary onClick={handleOrderAgain} title="Order Again" />
+      </div>
+    </div>
+  )

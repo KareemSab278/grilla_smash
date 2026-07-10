@@ -374,4 +374,17 @@ export const styles: Record<string, CSSProperties> = {
     color: 'var(--white)',
     margin: '20px 0',
   },
+  editButton: {
+    background: 'transparent',
+    border: '1px solid rgba(247,147,30,0.4)',
+    borderRadius: 6,
+    color: '#F7931E',
+    fontSize: '0.72rem',
+    padding: '3px 9px',
+    cursor: 'pointer',
+    fontFamily: 'Poppins, sans-serif',
+    letterSpacing: '0.03em',
+    flexShrink: 0,
+    transition: 'all 0.15s',
+  }
 }
