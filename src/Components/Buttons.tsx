@@ -6,6 +6,8 @@ interface ButtonProps {
     children?: React.ReactNode
     color?: string
     disabled?: boolean
+    optionalStyles?: React.CSSProperties
+    className?: string
 }
 
 export const Buttons = {
@@ -15,16 +17,19 @@ export const Buttons = {
     secondary: ({ onClick, title, children, disabled }: ButtonProps) => (
         <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled}>{children}</RenderButton>
     ),
+    category: ({ onClick, title, children, disabled, optionalStyles }: ButtonProps) => (
+        <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled} optionalStyles={optionalStyles}>{children}</RenderButton>
+    ),
 }
 
-const RenderButton = ({ onClick, title, children, color, disabled }: ButtonProps) => {
+const RenderButton = ({ onClick, title, children, color, disabled, optionalStyles, className }: ButtonProps) => {
     const [clicked, setClicked] = useState(false)
 
     const BtnColor = color || '#F7931E'
 
     useEffect(() => {
         if (clicked) {
-            setTimeout(() => { setClicked(false) }, 500)
+            setTimeout(() => { setClicked(false) }, 150)
         }
     }, [clicked])
 
@@ -34,10 +39,12 @@ const RenderButton = ({ onClick, title, children, color, disabled }: ButtonProps
             style={{
                 ...styles.primary_button,
                 background: clicked ? BtnColor : '#F7931E',
-                transform: clicked ? 'scale(1.1)' : 'scale(1)',
+                transform: clicked ? 'scale(0.9)' : 'scale(1)',
                 opacity: disabled ? 0.6 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
+                ...optionalStyles,
             }}
+            className={className}
             onClick={() => { if (!disabled) { setClicked(true); onClick() } }}
         >
             {title}{children}

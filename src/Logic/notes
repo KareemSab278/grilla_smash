@@ -1,0 +1,4 @@
+so i need to consder: 
+can the user order if theyre in london? must find out how far they are before anything and if > 30 minutes then cannto complete order (requires google api for this unfortunately)
+
+need to consider if the user is going to customise the order

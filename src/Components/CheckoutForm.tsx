@@ -1,28 +1,8 @@
-import type { ChangeEvent } from 'react'
+import { useState } from 'react'
+import type { ChangeEvent, CSSProperties } from 'react'
 import { Buttons } from './Buttons'
 
-type OrderForm = {
-  fullName: string
-  phone: string
-  email: string
-  address: string
-  postcode: string
-  cardNumber: string
-  expiry: string
-  cvv: string
-}
-
-type CheckoutFormProps = {
-  form: OrderForm
-  onChange: (field: keyof OrderForm, value: string) => void
-  onSubmit: () => void
-  onBack: () => void
-  error?: string
-  isSubmitting?: boolean
-  subtotal: number
-  delivery: number
-  total: number
-}
+import type { OrderForm, CheckoutFormProps } from '../Types'
 
 const field = (
   event: ChangeEvent<HTMLInputElement>,
@@ -31,48 +11,210 @@ const field = (
 ) => onChange(key, event.target.value)
 
 export const CheckoutForm = ({
-  form, onChange, onSubmit, onBack, error, isSubmitting, subtotal, delivery, total,
+  form,
+  onChange,
+  onSubmit,
+  onBack,
+  error,
+  isSubmitting,
+  subtotal,
+  delivery,
+  total,
 }: CheckoutFormProps) => {
+  const [focusedField, setFocusedField] = useState<keyof OrderForm | null>(null)
+  const [step, setStep] = useState<'info' | 'payment'>('info')
+  const [localError, setLocalError] = useState('')
+
+  const inputStyle = (field: keyof OrderForm) => ({
+    ...styles.input,
+    ...(focusedField === field ? styles.inputFocus : {}),
+  })
+
+  const handleContinue = () => {
+    if (!form.fullName.trim() || !form.phone.trim() || !form.address.trim() || !form.postcode.trim()) {
+      setLocalError('Please fill in all delivery details before continuing.')
+      return
+    }
+    setLocalError('')
+    setStep('payment')
+  }
+
+  const handleBackToInfo = () => {
+    setLocalError('')
+    setStep('info')
+  }
+
+  const nextError = localError || error
+
   return (
     <>
-      <div className="modal-body">
-        <h3 className="checkout-section-title">Delivery Details</h3>
-        <div className="checkout-group">
-          <input type="text" value={form.fullName} onChange={(e) => field(e, 'fullName', onChange)} placeholder="Full Name" />
-          <input type="text" value={form.phone} onChange={(e) => field(e, 'phone', onChange)} placeholder="Phone Number" />
-          <input type="text" value={form.address} onChange={(e) => field(e, 'address', onChange)} placeholder="Address" />
-          <input type="text" value={form.postcode} onChange={(e) => field(e, 'postcode', onChange)} placeholder="Postcode" />
-          <input type="text" value={form.email} onChange={(e) => field(e, 'email', onChange)} placeholder="Email (optional – for receipt)" />
-        </div>
+      <div style={styles.body}>
+        {step === 'info' ? (
+          <>
+            <h3 style={styles.sectionTitle}>Your Information</h3>
+            <div style={styles.group}>
+              <input
+                type="text"
+                value={form.fullName}
+                onChange={(e) => field(e, 'fullName', onChange)}
+                onFocus={() => setFocusedField('fullName')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('fullName')}
+                placeholder="Full Name"
+              />
+              <input
+                type="text"
+                value={form.phone}
+                onChange={(e) => field(e, 'phone', onChange)}
+                onFocus={() => setFocusedField('phone')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('phone')}
+                placeholder="Phone Number"
+              />
+              <input
+                type="text"
+                value={form.address}
+                onChange={(e) => field(e, 'address', onChange)}
+                onFocus={() => setFocusedField('address')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('address')}
+                placeholder="Address"
+              />
+              <input
+                type="text"
+                value={form.postcode}
+                onChange={(e) => field(e, 'postcode', onChange)}
+                onFocus={() => setFocusedField('postcode')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('postcode')}
+                placeholder="Postcode"
+              />
+              <input
+                type="text"
+                value={form.email}
+                onChange={(e) => field(e, 'email', onChange)}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('email')}
+                placeholder="Email (optional – for receipt)"
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <h3 style={styles.sectionTitle}>Continue to Payment</h3>
 
-        <h3 className="checkout-section-title">Payment</h3>
-        <div className="checkout-group">
-          <input type="text" value={form.cardNumber} onChange={(e) => field(e, 'cardNumber', onChange)} placeholder="Card Number" maxLength={19} />
-          <div className="inline-row">
-            <input type="text" value={form.expiry} onChange={(e) => field(e, 'expiry', onChange)} placeholder="MM/YY" maxLength={5} />
-            <input type="text" value={form.cvv} onChange={(e) => field(e, 'cvv', onChange)} placeholder="CVV" maxLength={3} />
-          </div>
-        </div>
+            <div style={styles.group}>
+              Stripe Payment impl here
+            </div>
 
-        <div className="order-summary-box">
-          <div className="summary-row"><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
-          <div className="summary-row"><span>Delivery</span><span>£{delivery.toFixed(2)}</span></div>
-          <div className="summary-row total"><span>Total</span><span>£{total.toFixed(2)}</span></div>
-        </div>
+            <div style={styles.orderSummaryBox}>
+              <div style={styles.summaryRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
+              <div style={styles.summaryRow}><span>Delivery</span><span>£{delivery.toFixed(2)}</span></div>
+              <div style={styles.summaryRowTotal}><span>Total</span><span style={styles.totalValue}>£{total.toFixed(2)}</span></div>
+            </div>
+          </>
+        )}
 
-        {error && <p className="form-error">{error}</p>}
-      </div>
 
-      <div className="modal-footer">
-        <div className="checkout-actions">
-          <Buttons.primary
-            onClick={onSubmit}
-            title={isSubmitting ? 'Placing Order…' : 'Complete Order'}
-            disabled={isSubmitting}
-          />
-          <Buttons.secondary onClick={onBack} title="Back to Cart" disabled={isSubmitting} />
+
+        {nextError && <p style={styles.formError}>{nextError}</p>}
+      </div >
+
+      <div style={styles.footer}>
+        <div style={styles.actions}>
+          {step === 'info' ? (
+            <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
+          ) : (
+            <Buttons.primary onClick={onSubmit} title={isSubmitting ? 'Placing Order…' : 'Complete Order'} disabled={isSubmitting} />
+          )}
+          <Buttons.secondary onClick={step === 'info' ? onBack : handleBackToInfo} title={step === 'info' ? 'Back to Cart' : 'Back to Info'} disabled={isSubmitting} />
         </div>
       </div>
     </>
   )
+}
+
+const styles: { [key: string]: CSSProperties } = {
+  body: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '20px 25px',
+  },
+  sectionTitle: {
+    fontSize: '1.5rem',
+    color: 'var(--orange)',
+    marginBottom: '16px',
+  },
+  group: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    maxWidth: '100%',
+    gap: '12px',
+    marginBottom: '28px',
+  },
+  input: {
+    width: '100%',
+    padding: '15px',
+    background: 'var(--dark-grey)',
+    border: '1px solid #444',
+    borderRadius: '8px',
+    color: 'var(--white)',
+    fontFamily: 'Poppins, sans-serif',
+    fontSize: '1rem',
+    transition: 'all 0.3s ease',
+    boxSizing: 'border-box',
+  },
+  inputFocus: {
+    outline: 'none',
+    borderColor: 'var(--orange)',
+    boxShadow: '0 0 0 3px rgba(247, 147, 30, 0.1)',
+  },
+  inlineRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '12px',
+  },
+  orderSummaryBox: {
+    background: 'var(--dark-grey)',
+    border: '1px solid #333',
+    borderRadius: '10px',
+    padding: '18px',
+    marginBottom: '16px',
+  },
+  summaryRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    color: '#aaa',
+    fontSize: '0.9rem',
+    marginBottom: '8px',
+  },
+  summaryRowTotal: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    color: 'var(--white)',
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: '1.2rem',
+    marginBottom: 0,
+  },
+  totalValue: {
+    color: 'var(--orange)',
+  },
+  formError: {
+    color: '#ff7a7a',
+    fontSize: '0.9rem',
+    marginBottom: '12px',
+  },
+  footer: {
+    padding: '25px',
+    borderTop: '1px solid #333',
+    flexShrink: 0,
+  },
+  actions: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
 }
