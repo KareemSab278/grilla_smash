@@ -22,6 +22,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const availableExtras = getAvailableExtras(cartItem.product)
     const isChicken = cartItem.product.category === 'chicken'
     const mealEligible = canMakeItAMeal(cartItem.product)
+    const sauceMissing = isChicken && !sauceChoice
     const sauceOptions = getSauceOptions()
     const drinkOptions = getDrinkOptions()
     const sideOptions = getSideOptions()
@@ -53,10 +54,10 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     }
 
     const itemTotal = getCartItemTotal(updatedItem)
-    const canSave = !isMeal || (selectedDrink !== null && selectedSide !== null)
+    const canSave = (!isChicken || !!sauceChoice) && (!isMeal || (selectedDrink !== null && selectedSide !== null))
 
     return (
-        <div style={{ padding: '0 4px', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '0 4px', display: 'flex', flexDirection: 'column'}}>
 
             {/* Item info */}
             <div style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '16px 0', borderBottom: '1px solid #2a2a2a' }}>
@@ -90,6 +91,10 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                             </PillButton>
                         ))}
                     </div>
+
+                    {sauceMissing && (
+                        <p style={{ margin: '10px 0 0', color: '#ff8a8a', fontSize: '0.9rem' }}>Please select a sauce to continue.</p>
+                    )}
                 </div>
             )}
 
@@ -132,6 +137,10 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                             </label>
                         ))}
                     </div>
+
+                    {sauceMissing && (
+                        <p style={{ margin: '10px 0 0', color: '#ff8a8a', fontSize: '0.9rem' }}>Please select a sauce to continue.</p>
+                    )}
                 </div>
             )}
 

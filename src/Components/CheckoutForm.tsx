@@ -20,7 +20,7 @@ export const CheckoutForm = ({
   subtotal,
   delivery,
   total,
-}: CheckoutFormProps) => {
+  disableCheckout, }: CheckoutFormProps) => {
   const [focusedField, setFocusedField] = useState<keyof OrderForm | null>(null)
   const [step, setStep] = useState<'info' | 'payment'>('info')
   const [localError, setLocalError] = useState('')
@@ -46,6 +46,7 @@ export const CheckoutForm = ({
 
   const nextError = localError || error
 
+  const orderDisabled = isSubmitting || disableCheckout
   return (
     <>
       <div style={styles.body}>
@@ -145,10 +146,17 @@ export const CheckoutForm = ({
           {step === 'info' ? (
             <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
           ) : (
-            <Buttons.primary onClick={onSubmit} title={isSubmitting ? 'Placing Order…' : 'Complete Order'} disabled={isSubmitting} />
+            <>
+              <Buttons.primary onClick={onSubmit} title={isSubmitting ? 'Placing Order…' : 'Complete Order'} disabled={orderDisabled} optionalStyles={disableCheckout ? { filter: 'blur(0.25rem)', opacity: 0.7 } : undefined} />
+              {disableCheckout && (
+                <p style={{ margin: 0, color: '#ff7a7a', fontSize: '0.9rem' }}>
+                  Please select a sauce for all chicken items before placing your order.
+                </p>
+              )}
+            </>
           )}
-          <Buttons.secondary onClick={step === 'info' ? onBack : handleBackToInfo} title={step === 'info' ? 'Back to Cart' : 'Back to Info'} disabled={isSubmitting} />
         </div>
+      </div>
       </div>
     </>
   )

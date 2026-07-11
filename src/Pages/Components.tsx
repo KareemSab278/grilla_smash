@@ -181,8 +181,10 @@ export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FE
           <p>Add some smash burgers!</p>
         </div>
       ) : (
-        cart.map((item) => (
-          <div style={styles.cartItem} key={item.id}>
+        cart.map((item) => {
+          const needsSauce = item.product.category === 'chicken' && !item.sauceChoice
+          return (
+          <div style={{ ...styles.cartItem, background: needsSauce ? 'rgba(255, 74, 74, 0.08)' : styles.cartItem.background, border: needsSauce ? '1px solid #ff6868' : styles.cartItem.border }} key={item.id}>
             <div style={{ ...styles.cartItemInfo, flex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                 <h4 style={styles.cartItemName}>{item.product.name}</h4>
@@ -192,6 +194,11 @@ export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FE
               {item.sauceChoice && (
                 <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
                   Sauce: {item.sauceChoice}
+                </p>
+              )}
+              {needsSauce && (
+                <p style={{ margin: '6px 0 0', color: '#ff8a8a', fontSize: '0.78rem' }}>
+                  Please select a sauce for this chicken item.
                 </p>
               )}
 
@@ -223,7 +230,7 @@ export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FE
               <button type="button" style={{ ...styles.editBtn, marginTop: 12 }} onClick={() => onEditItem(item.id)}>Customize</button>
             </div>
           </div>
-        ))
+        )})
       )}
     </div>
     {cart.length > 0 && (

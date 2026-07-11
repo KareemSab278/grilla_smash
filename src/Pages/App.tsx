@@ -5,7 +5,7 @@ import { Modal } from '../Components/Modal'
 import type { CartItem, OrderForm, Product } from '../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
-import { getCartItemTotal } from '../Logic/editor'
+import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
 
 const DELIVERY_FEE = 2.5
 
@@ -34,6 +34,8 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const cartQuantity = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart])
   const subtotal = useMemo(() => cart.reduce((s, i) => s + getCartItemTotal(i), 0), [cart])
   const total = useMemo(() => (cart.length > 0 ? subtotal + DELIVERY_FEE : 0), [cart.length, subtotal])
+
+  const hasMissingChickenSauce = useMemo(() => cart.some(requiresChickenSauce), [cart])
 
   const editingItem = editingCartItemId !== null
     ? cart.find(i => i.id === editingCartItemId) ?? null

@@ -11,14 +11,14 @@ interface ButtonProps {
 }
 
 export const Buttons = {
-    primary: ({ onClick, title, children, disabled }: ButtonProps) => (
-        <RenderButton onClick={onClick} title={title} disabled={disabled}>{children}</RenderButton>
+    primary: ({ onClick, title, children, disabled, optionalStyles, color }: ButtonProps) => (
+        <RenderButton onClick={onClick} title={title} disabled={disabled} color={color} optionalStyles={optionalStyles}>{children}</RenderButton>
     ),
-    secondary: ({ onClick, title, children, disabled }: ButtonProps) => (
-        <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled} optionalStyles={{ color: '#F7931E', border: '2px solid #F7931E'}}>{children}</RenderButton>
+    secondary: ({ onClick, title, children, disabled, optionalStyles, color }: ButtonProps) => (
+        <RenderButton onClick={onClick} title={title} color={color ?? '#222222'} disabled={disabled} optionalStyles={{ color: '#F7931E', border: '2px solid #F7931E', ...optionalStyles }}>{children}</RenderButton>
     ),
-    category: ({ onClick, title, children, disabled, optionalStyles }: ButtonProps) => (
-        <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled} optionalStyles={optionalStyles}>{children}</RenderButton>
+    category: ({ onClick, title, children, disabled, optionalStyles, color }: ButtonProps) => (
+        <RenderButton onClick={onClick} title={title} color={color ?? '#222222'} disabled={disabled} optionalStyles={optionalStyles}>{children}</RenderButton>
     ),
 }
 

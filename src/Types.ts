@@ -60,4 +60,5 @@ type CheckoutFormProps = {
     subtotal: number
     delivery: number
     total: number
+    disableCheckout?: boolean
 }

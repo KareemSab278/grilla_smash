@@ -22,3 +22,6 @@ export const getCartItemTotal = (item: CartItem): number => {
         : 0
     return (item.product.price + extrasTotal + mealTotal) * item.quantity
 }
+
+
+export const requiresChickenSauce = (item: CartItem): boolean => item.product.category === 'chicken' && !item.sauceChoice
