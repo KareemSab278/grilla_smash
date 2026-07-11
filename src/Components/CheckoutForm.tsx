@@ -169,7 +169,7 @@ const styles: { [key: string]: CSSProperties } = {
   },
   inputFocus: {
     outline: 'none',
-    borderColor: 'var(--orange)',
+    border: '1px solid var(--orange)',
     boxShadow: '0 0 0 3px rgba(247, 147, 30, 0.1)',
   },
   inlineRow: {

@@ -15,7 +15,7 @@ export const Buttons = {
         <RenderButton onClick={onClick} title={title} disabled={disabled}>{children}</RenderButton>
     ),
     secondary: ({ onClick, title, children, disabled }: ButtonProps) => (
-        <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled}>{children}</RenderButton>
+        <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled} optionalStyles={{ color: '#F7931E', border: '2px solid #F7931E'}}>{children}</RenderButton>
     ),
     category: ({ onClick, title, children, disabled, optionalStyles }: ButtonProps) => (
         <RenderButton onClick={onClick} title={title} color={'#222222'} disabled={disabled} optionalStyles={optionalStyles}>{children}</RenderButton>
@@ -24,6 +24,7 @@ export const Buttons = {
 
 const RenderButton = ({ onClick, title, children, color, disabled, optionalStyles, className }: ButtonProps) => {
     const [clicked, setClicked] = useState(false)
+    const [hovered, setHovered] = useState(false)
 
     const BtnColor = color || '#F7931E'
 
@@ -38,14 +39,16 @@ const RenderButton = ({ onClick, title, children, color, disabled, optionalStyle
             disabled={disabled}
             style={{
                 ...styles.primary_button,
-                background: clicked ? BtnColor : '#F7931E',
-                transform: clicked ? 'scale(0.9)' : 'scale(1)',
+                background: BtnColor,
+                transform: clicked ? 'scale(0.9)' : hovered ? 'scale(1.1)' : 'scale(1)',
                 opacity: disabled ? 0.6 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 ...optionalStyles,
             }}
             className={className}
             onClick={() => { if (!disabled) { setClicked(true); onClick() } }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
         >
             {title}{children}
         </button>
@@ -61,10 +64,9 @@ const styles = {
         fontSize: '1.3rem',
         letterSpacing: '2px',
         borderRadius: '50px',
-        cursor: 'pointer',
         transition: 'all 0.3s ease',
         textTransform: 'uppercase' as const,
-        boxShadow: '0 4px 15px rgba(247, 147, 30, 0.4)',
         display: 'inline-block',
-    },
-}
+        height: 'auto',
+        cursor: 'pointer',
+    }}

@@ -52,7 +52,6 @@ export const App = () => {
     )
   }
 
-  const removeItem = (itemId: number) => setCart((prev) => prev.filter((i) => i.id !== itemId))
 
   const openCart = () => { setModalOpen(true); setModalView('cart') }
 
@@ -152,7 +151,6 @@ export const App = () => {
           <CartSection
             cart={cart}
             updateQuantity={updateQuantity}
-            removeItem={removeItem}
             subtotal={subtotal}
             total={total}
             DELIVERY_FEE={DELIVERY_FEE}

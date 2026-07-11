@@ -60,7 +60,7 @@ export const Menu = ({ categories, onSetActiveCategory, activeCategory, filtered
             key={cat.id}
             onClick={() => onSetActiveCategory(cat.id)}
             title={cat.label}
-            optionalStyles={{ marginRight: '10px', marginBottom: '10px', background: activeCategory === cat.id ? '#F7931E' : '#222222', color: activeCategory === cat.id ? '#111111' : '#F7931E' }}
+            optionalStyles={{ marginRight: '10px', marginBottom: '10px', background: activeCategory === cat.id ? '#F7931E' : '#222222', color: activeCategory === cat.id ? '#111111' : '#F7931E', border: '2px solid #F7931E' }}
           />
         ))}
       </div>
@@ -89,12 +89,13 @@ export const Hero = ({ setActiveCategory }: { setActiveCategory: (category: stri
           title="Order Now"
         />
       </div>
-      <div className="hero-image" style={styles.heroImage}>
+      <div className="hero-image" >
         <img
           src="public/images/hero-burger.jpg"
-          alt="Smash burger"
+          alt="The Go Ape Oklahoma"
           loading="lazy"
           style={styles.heroImageImg}
+
         />
       </div>
     </div>
@@ -145,7 +146,6 @@ export const About = () => (
 interface CartSectionProps {
   cart: CartItem[],
   updateQuantity: (itemId: number, change: number) => void,
-  removeItem: (itemId: number) => void,
   subtotal: number,
   total: number,
   DELIVERY_FEE: number,
@@ -154,7 +154,7 @@ interface CartSectionProps {
   onEditItem: (itemId: number) => void,
 }
 
-export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => (
+export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => (
   <>
     <div style={styles.modalBody}>
       {cart.length === 0 ? (
@@ -197,18 +197,12 @@ export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total,
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-
               <div style={{ ...styles.cartItemActions, marginLeft: 10, marginTop: 20 }}>
                 <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, -1)}>−</button>
                 <span>{item.quantity}</span>
                 <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, 1)}>+</button>
               </div>
-
-
-
-            </div>
-            <div style={{ position: 'absolute', bottom: 200, right: 10 }}>
-              <button type="button" style={styles.editBtn} onClick={() => onEditItem(item.id)}>Edit</button>
+              <button type="button" style={{ ...styles.editBtn, marginTop: 12 }} onClick={() => onEditItem(item.id)}>Customize</button>
             </div>
           </div>
         ))
