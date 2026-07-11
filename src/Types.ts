@@ -35,7 +35,9 @@ type OrderForm = {
     fullName: string
     phone: string
     email: string
-    address: string
+    address1: string
+    address2?: string
+    city: string
     postcode: string
     cardNumber: string
     expiry: string

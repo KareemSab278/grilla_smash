@@ -31,7 +31,7 @@ export const CheckoutForm = ({
   })
 
   const handleContinue = () => {
-    if (!form.fullName.trim() || !form.phone.trim() || !form.address.trim() || !form.postcode.trim()) {
+    if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() || !form.postcode.trim()) {
       setLocalError('Please fill in all delivery details before continuing.')
       return
     }
@@ -73,13 +73,32 @@ export const CheckoutForm = ({
               />
               <input
                 type="text"
-                value={form.address}
-                onChange={(e) => field(e, 'address', onChange)}
-                onFocus={() => setFocusedField('address')}
+                value={form.address1}
+                onChange={(e) => field(e, 'address1', onChange)}
+                onFocus={() => setFocusedField('address1')}
                 onBlur={() => setFocusedField(null)}
-                style={inputStyle('address')}
+                style={inputStyle('address1')}
                 placeholder="Address"
               />
+              <input
+                type="text"
+                value={form.address2 || ''}
+                onChange={(e) => field(e, 'address2', onChange)}
+                onFocus={() => setFocusedField('address2')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('address2')}
+                placeholder="Address 2 (optional)"
+              />
+              <input
+                type="text"
+                value={form.city}
+                onChange={(e) => field(e, 'city', onChange)}
+                onFocus={() => setFocusedField('city')}
+                onBlur={() => setFocusedField(null)}
+                style={inputStyle('city')}
+                placeholder="City"
+              />
+              
               <input
                 type="text"
                 value={form.postcode}
