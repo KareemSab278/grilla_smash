@@ -43,7 +43,7 @@ export const drinkOptions: MealOption[] = [
     { id: 2, name: 'Coke Zero', price: 0.00 },
     { id: 3, name: 'Sprite', price: 0.00 },
     { id: 4, name: 'Fanta', price: 0.00 },
-    { id: 5, name: 'Milk Shake', price: 2.50 },
+    { id: 5, name: 'Milk Shake', price: 3.50 },
 ]
 
 const burgerAndWrapOptions = [
@@ -69,6 +69,11 @@ const loadedFriesOptions = [
 ]
 
 
+const combos = [
+    { name: 'Loaded Box Deal', price: 9.99, description: 'Any Burger with Loaded Fries and a Drink.' },
+    { name: 'Chicken Box Deal', price: 9.99, description: 'Chicken Burger or Chicken Wrap with Fries and 2 Strips or 3 Wings and a Drink.' },
+]
+
 export const extrasByCategory = {
     burgers: burgerAndWrapOptions,
     wraps: burgerAndWrapOptions,
@@ -76,4 +81,4 @@ export const extrasByCategory = {
     'loaded-fries': loadedFriesOptions,
 }
 
-export const chickenSauceOptions = ['Lemon & Herb', 'Medium', 'Hot', 'Extra Hot', 'Wild'];
+export const chickenSauceOptions = ['Lemon & Herb', 'Mild', 'Wild', 'Honey Sriracha'];
