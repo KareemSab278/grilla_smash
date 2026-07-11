@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import type { CartItem, Extra, Product } from '../Types'
-import type { MealOption } from '../products'
+import type { CartItem, Extra, Product, MealOption } from '../Types'
 import {
     canMakeItAMeal, getAvailableExtras, getCartItemTotal,
     getDrinkOptions, getSauceOptions, getSideOptions, MEAL_DISCOUNT,
@@ -146,7 +145,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                                 Add a side & drink — save £{MEAL_DISCOUNT.toFixed(2)}
                             </p>
                         </div>
-                        <ToggleSwitch on={isMeal} onToggle={() => setIsMeal(p => !p)} />
+                        <ToggleSwitch on={isMeal} onToggle={() => {setIsMeal(p => !p)}} />
                     </div>
 
                     {isMeal && (

@@ -12,7 +12,7 @@ type MealOption = {
     price: number
 }
 
- type MealSelection = {
+type MealSelection = {
     drink: Product
     side: MealOption
 }
