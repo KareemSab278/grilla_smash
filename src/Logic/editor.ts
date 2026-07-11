@@ -1,5 +1,5 @@
 import type { Product, CartItem, Extra } from "../Types"
-import { extrasByCategory, chickenSauceOptions, products } from "../products"
+import { extrasByCategory, chickenSauceOptions, products, mealOptions } from "../products"
 
 export const MEAL_DISCOUNT = 0.50
 
@@ -12,7 +12,7 @@ export const canMakeItAMeal = (product: Product): boolean =>
 export const getDrinkOptions = (): Product[] =>
     products.filter(p => p.category === 'drinks')
 
-export const getSideOptions = (): Product[] => products.filter(p => p.category === 'sides')
+export const getSideOptions = ()=> mealOptions;
 
 export const getSauceOptions = (): string[] => chickenSauceOptions
 

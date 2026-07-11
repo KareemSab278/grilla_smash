@@ -1,4 +1,4 @@
-import type { Product } from './Types'
+import type { Product, MealOption } from './Types'
 
 
 
@@ -26,6 +26,16 @@ export const products: Product[] = [
     { id: 21, name: 'Chilli Cheese Bites', category: 'sides', price: 3.49, description: 'Bite-sized chilli cheese nuggets. Crispy and gooey.', image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&h=400&fit=crop' },
     { id: 22, name: 'Coke', category: 'drinks', price: 1.49, description: '330ml can.', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&h=400&fit=crop' },
     { id: 23, name: 'Coke Zero', category: 'drinks', price: 1.49, description: '330ml can. No sugar.', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&h=400&fit=crop' },
+]
+
+// make it a meal increases by 2.50
+
+export const mealOptions: MealOption[] = [
+    { id: 1, name: 'Fries', price: 0.00 },
+    { id: 2, name: 'Peri Fries', price: 0.50 },
+    { id: 3, name: 'Onion Rings', price: 0.50 },
+    { id: 4, name: 'Mozzarella Sticks', price: 1.00 },
+    { id: 5, name: 'Chilli Cheese Bites', price: 1.00 },
 ]
 
 const burgerAndWrapOptions = [

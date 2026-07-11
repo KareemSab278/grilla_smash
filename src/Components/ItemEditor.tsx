@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CartItem, Extra, Product } from '../Types'
+import type { MealOption } from '../products'
 import {
     canMakeItAMeal, getAvailableExtras, getCartItemTotal,
     getDrinkOptions, getSauceOptions, getSideOptions, MEAL_DISCOUNT,
@@ -17,7 +18,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const [sauceChoice, setSauceChoice] = useState<string>(cartItem.sauceChoice ?? '')
     const [isMeal, setIsMeal] = useState<boolean>(!!cartItem.meal)
     const [selectedDrink, setSelectedDrink] = useState<Product | null>(cartItem.meal?.drink ?? null)
-    const [selectedSide, setSelectedSide] = useState<Product | null>(cartItem.meal?.side ?? null)
+    const [selectedSide, setSelectedSide] = useState<MealOption | null>(cartItem.meal?.side ?? null)
 
     const availableExtras = getAvailableExtras(cartItem.product)
     const isChicken = cartItem.product.category === 'chicken'

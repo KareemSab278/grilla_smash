@@ -3,7 +3,7 @@ import { CheckoutForm } from '../Components/CheckoutForm'
 import { ItemEditor } from '../Components/ItemEditor'
 import { Modal } from '../Components/Modal'
 import type { CartItem, OrderForm, Product } from '../Types'
-import { About, CartSection, Featured, Footer, Header, Hero, Menu, SuccessMessage } from './Components'
+import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
 import { getCartItemTotal } from '../Logic/editor'
 
@@ -14,7 +14,7 @@ const emptyForm: OrderForm = {
   cardNumber: '', expiry: '', cvv: '',
 }
 
-export const App = ({ nearestLocation }: { nearestLocation: string }) => {
+export const App = ({ nearestLocation }: { nearestLocation: string | false }) => {
   const [activeCategory, setActiveCategory] = useState('burgers')
   const [cart, setCart] = useState<CartItem[]>([])
   const [modalOpen, setModalOpen] = useState(false)
@@ -43,6 +43,7 @@ export const App = ({ nearestLocation }: { nearestLocation: string }) => {
     setCart((prev) => {
       return [...prev, { id: Date.now(), product, quantity: 1 }]
     })
+    setModalOpen(true)
   }
 
   const updateQuantity = (itemId: number, change: number) => {
@@ -109,88 +110,91 @@ export const App = ({ nearestLocation }: { nearestLocation: string }) => {
 
   const modalTitle =
     modalView === 'checkout' ? 'Checkout' :
-    modalView === 'success' ? 'Order Confirmed' :
-    modalView === 'edit' ? 'Customise Item' :
-    'Your Order'
+      modalView === 'success' ? 'Order Confirmed' :
+        modalView === 'edit' ? 'Customise Item' :
+          'Your Order'
 
   return (
-    <>
-      <Header cartQuantity={cartQuantity} openCart={openCart} nearestLocation={nearestLocation} />
 
-      <main>
+    !nearestLocation
+      ? <NoLocation /> :
+      <>
+        <Header cartQuantity={cartQuantity} openCart={openCart} nearestLocation={nearestLocation} />
 
-        <Hero
-          setActiveCategory={setActiveCategory}
-        />
+        <main>
 
-        <Featured
-          featuredProducts={featuredProducts}
-          onAddToCart={addToCart}
-        />
-
-        <Menu
-          categories={categories}
-          activeCategory={activeCategory}
-          filteredProducts={filteredProducts}
-          onSetActiveCategory={setActiveCategory}
-          addToCart={addToCart}
-        />
-
-        <About />
-
-      </main>
-
-      {/* MODAL (cart → edit → checkout → success) */}
-      <Modal
-        open={modalOpen}
-        title={modalTitle}
-        onClose={closeModal}
-        disableClose={modalView === 'checkout'}
-      >
-        {modalView === 'cart' &&
-          <CartSection
-            cart={cart}
-            updateQuantity={updateQuantity}
-            subtotal={subtotal}
-            total={total}
-            DELIVERY_FEE={DELIVERY_FEE}
-            openCheckout={openCheckout}
-            closeModal={closeModal}
-            onEditItem={openEditor}
+          <Hero
+            setActiveCategory={setActiveCategory}
           />
-        }
 
-        {modalView === 'edit' && editingItem && (
-          <div style={{ padding: '16px 20px' }}>
-            <ItemEditor
-              cartItem={editingItem}
-              onSave={saveCartItemEdit}
-              onBack={() => { setEditingCartItemId(null); setModalView('cart') }}
+          <Featured
+            featuredProducts={featuredProducts}
+            onAddToCart={addToCart}
+          />
+
+          <Menu
+            categories={categories}
+            activeCategory={activeCategory}
+            filteredProducts={filteredProducts}
+            onSetActiveCategory={setActiveCategory}
+            addToCart={addToCart}
+          />
+
+          <About />
+
+        </main>
+
+        {/* MODAL (cart → edit → checkout → success) */}
+        <Modal
+          open={modalOpen}
+          title={modalTitle}
+          onClose={closeModal}
+          disableClose={modalView === 'checkout'}
+        >
+          {modalView === 'cart' &&
+            <CartSection
+              cart={cart}
+              updateQuantity={updateQuantity}
+              subtotal={subtotal}
+              total={total}
+              DELIVERY_FEE={DELIVERY_FEE}
+              openCheckout={openCheckout}
+              closeModal={closeModal}
+              onEditItem={openEditor}
             />
-          </div>
-        )}
+          }
 
-        {modalView === 'checkout' && (
-          <CheckoutForm
-            form={form}
-            onChange={handleFormChange}
-            onSubmit={handleSubmit}
-            onBack={() => setModalView('cart')}
-            error={error}
-            isSubmitting={isSubmitting}
-            subtotal={subtotal}
-            delivery={DELIVERY_FEE}
-            total={total}
-          />
-        )}
+          {modalView === 'edit' && editingItem && (
+            <div style={{ padding: '16px 20px' }}>
+              <ItemEditor
+                cartItem={editingItem}
+                onSave={saveCartItemEdit}
+                onBack={() => { setEditingCartItemId(null); setModalView('cart') }}
+              />
+            </div>
+          )}
 
-        {modalView === 'success' &&
-          <SuccessMessage orderNumber={orderNumber} handleOrderAgain={handleOrderAgain} />
-        }
-      </Modal>
+          {modalView === 'checkout' && (
+            <CheckoutForm
+              form={form}
+              onChange={handleFormChange}
+              onSubmit={handleSubmit}
+              onBack={() => setModalView('cart')}
+              error={error}
+              isSubmitting={isSubmitting}
+              subtotal={subtotal}
+              delivery={DELIVERY_FEE}
+              total={total}
+            />
+          )}
 
-      <Footer />
-    </>
+          {modalView === 'success' &&
+            <SuccessMessage orderNumber={orderNumber} handleOrderAgain={handleOrderAgain} />
+          }
+        </Modal>
+
+        <Footer />
+      </>
   )
 }
 

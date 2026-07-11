@@ -1,4 +1,4 @@
-export type { Product, CartItem, OrderForm, CheckoutFormProps, Extra, MealSelection }
+export type { Product, CartItem, OrderForm, CheckoutFormProps, Extra, MealSelection, MealOption }
 
 type Extra = {
     name: string
@@ -6,9 +6,15 @@ type Extra = {
     isProtein?: boolean
 }
 
-type MealSelection = {
+type MealOption = {
+    id: number
+    name: string
+    price: number
+}
+
+ type MealSelection = {
     drink: Product
-    side: Product
+    side: MealOption
 }
 
 type Product = {
