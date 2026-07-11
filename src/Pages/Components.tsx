@@ -144,14 +144,14 @@ export const About = () => (
 
 interface CartSectionProps {
   cart: CartItem[],
-  updateQuantity: (productId: number, change: number) => void,
-  removeItem: (productId: number) => void,
+  updateQuantity: (itemId: number, change: number) => void,
+  removeItem: (itemId: number) => void,
   subtotal: number,
   total: number,
   DELIVERY_FEE: number,
   openCheckout: () => void,
   closeModal: () => void,
-  onEditItem: (productId: number) => void,
+  onEditItem: (itemId: number) => void,
 }
 
 export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => (
@@ -164,17 +164,10 @@ export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total,
         </div>
       ) : (
         cart.map((item) => (
-          <div style={styles.cartItem} key={item.product.id}>
+          <div style={styles.cartItem} key={item.id}>
             <div style={{ ...styles.cartItemInfo, flex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                 <h4 style={styles.cartItemName}>{item.product.name}</h4>
-                <button
-                  type="button"
-                  onClick={() => onEditItem(item.product.id)}
-                  style={styles.editButton}
-                >
-                  Edit
-                </button>
               </div>
 
               {/* Sauce */}
@@ -202,11 +195,20 @@ export const CartSection = ({ cart, updateQuantity, removeItem, subtotal, total,
                 £{getCartItemTotal(item).toFixed(2)}
               </p>
             </div>
-            <div style={{ ...styles.cartItemActions, marginLeft: 10 }}>
-              <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.product.id, -1)}>−</button>
-              <span>{item.quantity}</span>
-              <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.product.id, 1)}>+</button>
-              <button type="button" style={styles.removeBtn} onClick={() => removeItem(item.product.id)}>Remove</button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+
+              <div style={{ ...styles.cartItemActions, marginLeft: 10, marginTop: 20 }}>
+                <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, -1)}>−</button>
+                <span>{item.quantity}</span>
+                <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, 1)}>+</button>
+              </div>
+
+
+
+            </div>
+            <div style={{ position: 'absolute', bottom: 200, right: 10 }}>
+              <button type="button" style={styles.editBtn} onClick={() => onEditItem(item.id)}>Edit</button>
             </div>
           </div>
         ))

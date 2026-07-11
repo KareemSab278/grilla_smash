@@ -336,6 +336,16 @@ export const styles: Record<string, CSSProperties> = {
     fontSize: '0.75rem',
     cursor: 'pointer',
   },
+  editBtn: {
+    background: 'transparent',
+    border: '1px solid #2a572a',
+    color: '#8aff8a',
+    width: 'auto',
+    padding: '4px 10px',
+    borderRadius: '20px',
+    fontSize: '0.75rem',
+    cursor: 'pointer',
+  },
   cartTotalRow: {
     display: 'flex',
     justifyContent: 'space-between',

@@ -36,25 +36,23 @@ export const App = () => {
   const total = useMemo(() => (cart.length > 0 ? subtotal + DELIVERY_FEE : 0), [cart.length, subtotal])
 
   const editingItem = editingCartItemId !== null
-    ? cart.find(i => i.product.id === editingCartItemId) ?? null
+    ? cart.find(i => i.id === editingCartItemId) ?? null
     : null
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id)
-      if (existing) return prev.map((i) => i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i)
-      return [...prev, { product, quantity: 1 }]
+      return [...prev, { id: Date.now(), product, quantity: 1 }]
     })
   }
 
-  const updateQuantity = (productId: number, change: number) => {
+  const updateQuantity = (itemId: number, change: number) => {
     setCart((prev) =>
-      prev.map((i) => i.product.id === productId ? { ...i, quantity: i.quantity + change } : i)
+      prev.map((i) => i.id === itemId ? { ...i, quantity: i.quantity + change } : i)
         .filter((i) => i.quantity > 0)
     )
   }
 
-  const removeItem = (productId: number) => setCart((prev) => prev.filter((i) => i.product.id !== productId))
+  const removeItem = (itemId: number) => setCart((prev) => prev.filter((i) => i.id !== itemId))
 
   const openCart = () => { setModalOpen(true); setModalView('cart') }
 
@@ -64,13 +62,13 @@ export const App = () => {
     setModalView('checkout')
   }
 
-  const openEditor = (productId: number) => {
-    setEditingCartItemId(productId)
+  const openEditor = (itemId: number) => {
+    setEditingCartItemId(itemId)
     setModalView('edit')
   }
 
   const saveCartItemEdit = (updated: CartItem) => {
-    setCart(prev => prev.map(i => i.product.id === updated.product.id ? updated : i))
+    setCart(prev => prev.map(i => i.id === updated.id ? updated : i))
     setEditingCartItemId(null)
     setModalView('cart')
   }

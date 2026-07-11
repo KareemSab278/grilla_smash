@@ -23,6 +23,7 @@ type Product = {
 }
 
 type CartItem = {
+    id: number
     product: Product
     quantity: number
     extras?: Extra[]
