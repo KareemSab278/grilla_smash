@@ -14,7 +14,6 @@ export const CheckoutForm = ({
   form,
   onChange,
   onSubmit,
-  onBack,
   error,
   isSubmitting,
   subtotal,
@@ -37,11 +36,6 @@ export const CheckoutForm = ({
     }
     setLocalError('')
     setStep('payment')
-  }
-
-  const handleBackToInfo = () => {
-    setLocalError('')
-    setStep('info')
   }
 
   const nextError = localError || error
@@ -156,7 +150,6 @@ export const CheckoutForm = ({
             </>
           )}
         </div>
-      </div>
       </div>
     </>
   )

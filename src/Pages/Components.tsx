@@ -172,80 +172,86 @@ interface CartSectionProps {
   onEditItem: (itemId: number) => void,
 }
 
-export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => (
-  <>
-    <div style={styles.modalBody}>
-      {cart.length === 0 ? (
-        <div style={styles.cartEmpty}>
-          <p>Your cart is empty</p>
-          <p>Add some smash burgers!</p>
-        </div>
-      ) : (
-        cart.map((item) => {
-          const needsSauce = item.product.category === 'chicken' && !item.sauceChoice
-          return (
-          <div style={{ ...styles.cartItem, background: needsSauce ? 'rgba(255, 74, 74, 0.08)' : styles.cartItem.background, border: needsSauce ? '1px solid #ff6868' : styles.cartItem.border }} key={item.id}>
-            <div style={{ ...styles.cartItemInfo, flex: 1 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                <h4 style={styles.cartItemName}>{item.product.name}</h4>
-              </div>
-
-              {/* Sauce */}
-              {item.sauceChoice && (
-                <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
-                  Sauce: {item.sauceChoice}
-                </p>
-              )}
-              {needsSauce && (
-                <p style={{ margin: '6px 0 0', color: '#ff8a8a', fontSize: '0.78rem' }}>
-                  Please select a sauce for this chicken item.
-                </p>
-              )}
-
-              {/* Extras */}
-              {item.extras && item.extras.length > 0 && (
-                <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
-                  + {item.extras.map(e => e.name).join(', ')}
-                </p>
-              )}
-
-              {/* Meal */}
-              {item.meal && (
-                <p style={{ margin: '3px 0 0', color: '#F7931E', fontSize: '0.76rem' }}>
-                  🍽 Meal: {item.meal.side.name} + {item.meal.drink.name}
-                </p>
-              )}
-
-              <p style={{ ...styles.cartItemPrice, marginTop: 5 }}>
-                £{getCartItemTotal(item).toFixed(2)}
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ ...styles.cartItemActions, marginLeft: 10, marginTop: 20 }}>
-                <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, -1)}>−</button>
-                <span>{item.quantity}</span>
-                <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, 1)}>+</button>
-              </div>
-              <button type="button" style={{ ...styles.editBtn, marginTop: 12 }} onClick={() => onEditItem(item.id)}>Customize</button>
-            </div>
+export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FEE, openCheckout, closeModal, onEditItem }: CartSectionProps) => {
+  const hasMissingChickenSauce = cart.some(item => item.product.category === 'chicken' && !item.sauceChoice)
+  return (
+    <>
+      <div style={styles.modalBody}>
+        {cart.length === 0 ? (
+          <div style={styles.cartEmpty}>
+            <p>Your cart is empty</p>
+            <p>Add some smash burgers!</p>
           </div>
-        )})
-      )}
-    </div>
-    {cart.length > 0 && (
-      <div style={styles.modalFooter}>
-        <div style={styles.cartTotalRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
-        <div style={styles.cartTotalRow}><span>Delivery</span><span>£{DELIVERY_FEE.toFixed(2)}</span></div>
-        <div style={styles.cartTotalFinal}><span>Total</span><span>£{total.toFixed(2)}</span></div>
-        <div style={styles.cartActions}>
-          <Buttons.primary onClick={openCheckout} title="Checkout" />
-          <Buttons.secondary onClick={closeModal} title="Keep Shopping" />
-        </div>
+        ) : (
+          cart.map((item) => {
+            const needsSauce = item.product.category === 'chicken' && !item.sauceChoice
+            return (
+              <div style={{ ...styles.cartItem, background: needsSauce ? 'rgba(255, 74, 74, 0.08)' : styles.cartItem.background, border: needsSauce ? '1px solid #ff6868' : styles.cartItem.border }} key={item.id}>
+                <div style={{ ...styles.cartItemInfo, flex: 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <h4 style={styles.cartItemName}>{item.product.name}</h4>
+                  </div>
+
+                  {/* Sauce */}
+                  {item.sauceChoice && (
+                    <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
+                      Sauce: {item.sauceChoice}
+                    </p>
+                  )}
+                  {needsSauce && (
+                    <p style={{ margin: '6px 0 0', color: '#ff8a8a', fontSize: '0.78rem' }}>
+                      Please select a sauce for this chicken item.
+                    </p>
+                  )}
+
+                  {/* Extras */}
+                  {item.extras && item.extras.length > 0 && (
+                    <p style={{ margin: '2px 0 0', color: '#888', fontSize: '0.76rem' }}>
+                      + {item.extras.map(e => e.name).join(', ')}
+                    </p>
+                  )}
+
+                  {/* Meal */}
+                  {item.meal && (
+                    <p style={{ margin: '3px 0 0', color: '#F7931E', fontSize: '0.76rem' }}>
+                      🍽 Meal: {item.meal.side.name} + {item.meal.drink.name}
+                    </p>
+                  )}
+
+                  <p style={{ ...styles.cartItemPrice, marginTop: 5 }}>
+                    £{getCartItemTotal(item).toFixed(2)}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ ...styles.cartItemActions, marginLeft: 10, marginTop: 20 }}>
+                    <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, -1)}>−</button>
+                    <span>{item.quantity}</span>
+                    <button type="button" style={styles.cartActionBtn} onClick={() => updateQuantity(item.id, 1)}>+</button>
+                  </div>
+                  <button type="button" style={{ ...styles.editBtn, marginTop: 12 }} onClick={() => onEditItem(item.id)}>Customize</button>
+                </div>
+              </div>
+            )
+          })
+        )}
       </div>
-    )}
-  </>
-)
+      {cart.length > 0 && (
+        <div style={styles.modalFooter}>
+          <div style={styles.cartTotalRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
+          <div style={styles.cartTotalRow}><span>Delivery</span><span>£{DELIVERY_FEE.toFixed(2)}</span></div>
+          <div style={styles.cartTotalFinal}><span>Total</span><span>£{total.toFixed(2)}</span></div>
+          <div style={styles.cartActions}>
+
+            {!hasMissingChickenSauce && <Buttons.primary onClick={openCheckout} title="Checkout" />}
+
+            <Buttons.secondary onClick={closeModal} title="Keep Shopping" />
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
 
 export const SuccessMessage = ({ orderNumber, handleOrderAgain }: { orderNumber: number | null, handleOrderAgain: () => void }) =>
   orderNumber !== null && (

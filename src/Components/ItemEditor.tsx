@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import type { CartItem, Extra, MealOption } from '../Types'
 import {
-    canMakeItAMeal, getAvailableExtras, getCartItemTotal,
-    getDrinkOptions, getSauceOptions, getSideOptions, MEAL_PRICE_INCREASE,
+    canMakeItAMeal, getAvailableExtras, getCartItemTotal, MEAL_PRICE_INCREASE,
 } from '../Logic/editor'
 import { Buttons } from './Buttons'
+import {drinkOptions, mealSideOptions, chickenSauceOptions} from "../products";
 
 interface ItemEditorProps {
     cartItem: CartItem
@@ -23,9 +23,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const isChicken = cartItem.product.category === 'chicken'
     const mealEligible = canMakeItAMeal(cartItem.product)
     const sauceMissing = isChicken && !sauceChoice
-    const sauceOptions = getSauceOptions()
-    const drinkOptions = getDrinkOptions()
-    const sideOptions = getSideOptions()
+    
 
     const selectedProteinExtra = selectedExtras.find(e => e.isProtein)
     const toggleExtra = (extra: Extra) => {
@@ -81,7 +79,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                 <div style={{ padding: '16px 0', borderBottom: '1px solid #2a2a2a' }}>
                     <SectionLabel>Choose Your Sauce</SectionLabel>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
-                        {sauceOptions.map(sauce => (
+                        {chickenSauceOptions.map(sauce => (
                             <PillButton
                                 key={sauce}
                                 active={sauceChoice === sauce}
@@ -162,7 +160,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                             <div>
                                 <p style={{ margin: '0 0 8px', color: '#aaa', fontSize: '0.82rem' }}>Choose a Side</p>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                    {sideOptions.map(side => (
+                                    {mealSideOptions.map(side => (
                                         <PillButton
                                             key={side.id}
                                             active={selectedSide?.id === side.id}
