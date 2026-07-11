@@ -10,11 +10,11 @@ import { getCartItemTotal } from '../Logic/editor'
 const DELIVERY_FEE = 2.5
 
 const emptyForm: OrderForm = {
-  fullName: '', phone: '', email: '', address: '', postcode: '',
+  fullName: '', phone: '', email: '', address1: '', address2: '', city: '', postcode: '',
   cardNumber: '', expiry: '', cvv: '',
 }
 
-export const App = () => {
+export const App = ({ nearestLocation }: { nearestLocation: string }) => {
   const [activeCategory, setActiveCategory] = useState('burgers')
   const [cart, setCart] = useState<CartItem[]>([])
   const [modalOpen, setModalOpen] = useState(false)
@@ -86,7 +86,7 @@ export const App = () => {
     setForm((prev) => ({ ...prev, [field]: value }))
 
   const handleSubmit = () => {
-    if (!form.fullName.trim() || !form.phone.trim() || !form.address.trim() ||
+    if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() ||
       !form.postcode.trim() || !form.cardNumber.trim() || !form.expiry.trim() || !form.cvv.trim()) {
       return
     }
@@ -115,7 +115,7 @@ export const App = () => {
 
   return (
     <>
-      <Header cartQuantity={cartQuantity} openCart={openCart} />
+      <Header cartQuantity={cartQuantity} openCart={openCart} nearestLocation={nearestLocation} />
 
       <main>
 

@@ -353,6 +353,12 @@ export const styles: Record<string, CSSProperties> = {
     color: '#aaa',
     fontSize: '0.9rem',
   },
+  locationText: {
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: '0.8rem',
+    color: 'var(--orange)',
+    marginTop: -10,
+  },
   cartTotalFinal: {
     display: 'flex',
     justifyContent: 'space-between',

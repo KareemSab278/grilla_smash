@@ -1,10 +1,5 @@
-// this will get the user's location and check if it's within the delivery area
-
 const LOCATIONS = {
-    'WALSALL': { lat: 52.58538423585385, lng: -1.9832210521368572 },
-    'BIRMINGHAM': { lat: 52.486243, lng: -1.890401 },
-    'LONDON': { lat: 51.5074, lng: -0.1278 },
-    'MANCHESTER': { lat: 53.4808, lng: -2.2426 },
+    'WALSALL': { lat: 52.58538423585385, lng: -1.9832210521368572 }
 }
 
 export const findNearestLocation = async (): Promise<string | false> => {
@@ -25,12 +20,9 @@ export const findNearestLocation = async (): Promise<string | false> => {
     }, { name: '', distance: Infinity })
 
 
-    // Check if the nearest location is within 10 km
     if (nearestLocation.distance <= 10) {
         const found = nearestLocation.name.at(0)?.toUpperCase() + nearestLocation.name.slice(1).toLowerCase()
-        console.log(`Nearest location: ${found}, Distance: ${nearestLocation.distance.toFixed(2)} km`)
         return found
-
     } else {
         return false
     }

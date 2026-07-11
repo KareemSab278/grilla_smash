@@ -102,12 +102,15 @@ export const Hero = ({ setActiveCategory }: { setActiveCategory: (category: stri
   </section>
 )
 
-export const Header = ({ cartQuantity, openCart }: { cartQuantity: number, openCart: () => void }) => (
+export const Header = ({ cartQuantity, openCart, nearestLocation }: { cartQuantity: number, openCart: () => void, nearestLocation: string }) => (
   <header style={styles.header}>
     <div className="container nav" style={{ ...styles.container, ...styles.nav }}>
       <div className="logo" style={styles.logo}>
-        <span className="orange" style={styles.logoOrange}>GRILL'A</span>&nbsp;
-        <span style={styles.logoText}>SMASH</span>
+        <div>
+          <span className="orange" style={styles.logoOrange}>GRILL'A</span>&nbsp;
+          <span style={styles.logoText}>SMASH</span>
+        </div>
+        {nearestLocation && (<div style={styles.locationText}>{nearestLocation}</div>)}
       </div>
       <nav style={styles.navLinks}>
         <a href="#home" style={styles.navLink}>Home</a>
@@ -115,8 +118,10 @@ export const Header = ({ cartQuantity, openCart }: { cartQuantity: number, openC
         <a href="#menu" style={styles.navLink}>Menu</a>
         <a href="#about" style={styles.navLink}>About</a>
       </nav>
+
       {cartQuantity > 0 ? <Buttons.primary onClick={openCart} title={`My Cart (${cartQuantity})`} /> : <div style={{ width: 180 }}></div>}
     </div>
+
   </header>
 )
 

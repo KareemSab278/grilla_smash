@@ -42,11 +42,20 @@ const burgerAndWrapOptions = [
     { name: 'Extra Honey Mustard Sauce', price: 0.50 }
 ]
 
+const loadedFriesOptions = [
+    { name: 'Extra Cheese', price: 0.50 },
+    { name: 'Extra Jalapeños', price: 0.25 },
+    { name: "Go Grill'a (+1 Chicken Patty)", price: 2.00, isProtein: true },
+    { name: 'Go Chimp (+2.5 oz Beef)', price: 2.00, isProtein: true },
+    { name: 'Go Ape (+5 oz Beef)', price: 4.00, isProtein: true },
+]
+
+
 export const extrasByCategory = {
     burgers: burgerAndWrapOptions,
     wraps: burgerAndWrapOptions,
     chicken: [{ name: 'Sauce', price: 0 }],
-    'loaded-fries': [{ name: 'Extra Cheese', price: 0.50 }, { name: 'Extra Jalapeños', price: 0.25 }, { name: 'Extra Protein', price: 2.00 }],
+    'loaded-fries': loadedFriesOptions,
 }
 
 export const chickenSauceOptions = ['Lemon & Herb', 'Medium', 'Hot', 'Extra Hot', 'Wild'];
