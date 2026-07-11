@@ -13,7 +13,7 @@ type MealOption = {
 }
 
 type MealSelection = {
-    drink: Product
+    drink: MealOption
     side: MealOption
 }
 

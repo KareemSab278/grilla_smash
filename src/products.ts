@@ -30,12 +30,20 @@ export const products: Product[] = [
 
 // make it a meal increases by 2.50
 
-export const mealOptions: MealOption[] = [
+export const mealSideOptions: MealOption[] = [
     { id: 1, name: 'Fries', price: 0.00 },
     { id: 2, name: 'Peri Fries', price: 0.50 },
     { id: 3, name: 'Onion Rings', price: 0.50 },
     { id: 4, name: 'Mozzarella Sticks', price: 1.00 },
     { id: 5, name: 'Chilli Cheese Bites', price: 1.00 },
+]
+
+export const drinkOptions: MealOption[] = [
+    { id: 1, name: 'Coke', price: 0.00 },
+    { id: 2, name: 'Coke Zero', price: 0.00 },
+    { id: 3, name: 'Sprite', price: 0.00 },
+    { id: 4, name: 'Fanta', price: 0.00 },
+    { id: 5, name: 'Milk Shake', price: 2.50 },
 ]
 
 const burgerAndWrapOptions = [

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import type { CartItem, Extra, Product, MealOption } from '../Types'
+import type { CartItem, Extra, MealOption } from '../Types'
 import {
     canMakeItAMeal, getAvailableExtras, getCartItemTotal,
-    getDrinkOptions, getSauceOptions, getSideOptions, MEAL_DISCOUNT,
+    getDrinkOptions, getSauceOptions, getSideOptions, MEAL_PRICE_INCREASE,
 } from '../Logic/editor'
 import { Buttons } from './Buttons'
 
@@ -16,7 +16,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const [selectedExtras, setSelectedExtras] = useState<Extra[]>(cartItem.extras ?? [])
     const [sauceChoice, setSauceChoice] = useState<string>(cartItem.sauceChoice ?? '')
     const [isMeal, setIsMeal] = useState<boolean>(!!cartItem.meal)
-    const [selectedDrink, setSelectedDrink] = useState<Product | null>(cartItem.meal?.drink ?? null)
+    const [selectedDrink, setSelectedDrink] = useState<MealOption | null>(cartItem.meal?.drink ?? null)
     const [selectedSide, setSelectedSide] = useState<MealOption | null>(cartItem.meal?.side ?? null)
 
     const availableExtras = getAvailableExtras(cartItem.product)
@@ -142,7 +142,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                         <div>
                             <SectionLabel>Make it a Meal</SectionLabel>
                             <p style={{ margin: '3px 0 0', color: '#777', fontSize: '0.78rem' }}>
-                                Add a side & drink — save £{MEAL_DISCOUNT.toFixed(2)}
+                                Add a side & drink for £{MEAL_PRICE_INCREASE.toFixed(2)}
                             </p>
                         </div>
                         <ToggleSwitch on={isMeal} onToggle={() => {setIsMeal(p => !p)}} />
@@ -200,7 +200,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                 </div>
                 {isMeal && selectedDrink && selectedSide && (
                     <p style={{ margin: '6px 0 0', color: '#4ade80', fontSize: '0.78rem' }}>
-                        ✓ Meal deal applied — saving £{(MEAL_DISCOUNT * cartItem.quantity).toFixed(2)}
+                        ✓ Meal deal applied — saving £{(MEAL_PRICE_INCREASE * cartItem.quantity).toFixed(2)}
                     </p>
                 )}
             </div>
