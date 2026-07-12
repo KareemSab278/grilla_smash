@@ -1,5 +1,7 @@
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import type { CSSProperties } from 'react'
+import type { StripeCardElementChangeEvent } from '@stripe/stripe-js';
+import { useState } from 'react'
 import { Buttons } from './Buttons'
 
 type StripePaymentProps = {
@@ -7,22 +9,27 @@ type StripePaymentProps = {
   onBack: () => void
   isSubmitting?: boolean
   disableCheckout?: boolean
+  total: number
 }
 
 export const StripePayment = ({
   onPay,
   onBack,
   isSubmitting,
-  disableCheckout
+  disableCheckout,
+  total
 }: StripePaymentProps) => {
 
   const stripe = useStripe();
   const elements = useElements();
+  const [cardComplete, setCardComplete] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
 
-  const payDisabled = isSubmitting || disableCheckout;
+  const stripeReady = Boolean(stripe && elements);
+  const payDisabled = isSubmitting || disableCheckout || !stripeReady || !cardComplete;
 
   const handleStripePay = async () => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !cardComplete) return;
 
     const cardElement = elements.getElement(CardElement);
 
@@ -31,34 +38,46 @@ export const StripePayment = ({
     await onPay(cardElement);
   };
 
+  const handleCardChange = (event: StripeCardElementChangeEvent) => {
+    setCardComplete(event.complete);
+    setCardError(event.error?.message || null);
+  };
+
   return (
     <div style={styles.paymentBody}>
       <p style={styles.paymentNotice}>
-        Stripe payment is handled here. Enter your card details and submit to pay.
+        {cardError
+          ? cardError
+          : !cardComplete
+            ? 'Enter your card details to enable payment.'
+            : 'Card details are complete.'}
       </p>
 
-      <CardElement
-        options={{
-          style: {
-            base: {
-              color: "#fff",
-              fontSize: "16px",
-              "::placeholder": {
-                color: "#ccc",
+      <div style={{ marginBottom: '20px' }}>
+        <CardElement
+          options={{
+            style: {
+              base: {
+                color: "#ffffff",
+                fontSize: "16px",
+                "::placeholder": {
+                  color: "#959595",
+                },
               },
             },
-          },
-        }}
-      />
+          }}
+          onChange={handleCardChange}
+        />
+      </div>
 
       <div style={styles.buttonRow}>
-        <Buttons.secondary onClick={onBack} title="Back" />
-
         <Buttons.primary
           onClick={handleStripePay}
-          title={isSubmitting ? "Processing Payment…" : "Pay with Stripe"}
+          title={isSubmitting ? "Processing Payment…" : `Pay £${total.toFixed(2)}`}
           disabled={payDisabled}
         />
+
+        <Buttons.secondary onClick={onBack} title="Go Back" />
       </div>
     </div>
   );
@@ -79,7 +98,10 @@ const styles: { [key: string]: CSSProperties } = {
   },
   buttonRow: {
     display: 'flex',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignContent: 'center',
+    margin: 'auto',
     gap: '12px',
     flexWrap: 'wrap',
   },

@@ -55,7 +55,7 @@ export const CheckoutForm = ({
                 type="text"
                 value={form.fullName}
                 onChange={(e) => field(e, 'fullName', onChange)}
-                onFocus={() => setFocusedField('fullName')}
+                title={isSubmitting ? "Processing Payment…" : `Pay £${total.toFixed(2)}`}
                 onBlur={() => setFocusedField(null)}
                 style={inputStyle('fullName')}
                 placeholder="Full Name"
@@ -118,12 +118,12 @@ export const CheckoutForm = ({
           </>
         ) : (
           <>
-            <h3 style={styles.sectionTitle}>Continue to Payment</h3>
             <StripePayment
               onPay={onSubmit}
               onBack={onBack}
               isSubmitting={isSubmitting}
               disableCheckout={disableCheckout}
+              total={total}
             />
             <div style={styles.orderSummaryBox}>
               <div style={styles.summaryRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
@@ -139,7 +139,10 @@ export const CheckoutForm = ({
       <div style={styles.footer}>
         <div style={styles.actions}>
           {step === 'info' ? (
-            <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
+            <>
+              <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
+              <Buttons.secondary onClick={onBack} title="Back to Cart" disabled={isSubmitting} />
+            </>
           ) : null}
         </div>
       </div>
