@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, CSSProperties } from 'react'
 import { Buttons } from './Buttons'
+import { StripePayment } from './StripePayment'
 
 import type { OrderForm, CheckoutFormProps } from '../Types'
 
@@ -14,12 +15,14 @@ export const CheckoutForm = ({
   form,
   onChange,
   onSubmit,
+  onBack,
   error,
   isSubmitting,
   subtotal,
   delivery,
   total,
-  disableCheckout, }: CheckoutFormProps) => {
+  disableCheckout,
+}: CheckoutFormProps) => {
   const [focusedField, setFocusedField] = useState<keyof OrderForm | null>(null)
   const [step, setStep] = useState<'info' | 'payment'>('info')
   const [localError, setLocalError] = useState('')
@@ -30,7 +33,8 @@ export const CheckoutForm = ({
   })
 
   const handleContinue = () => {
-    if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() || !form.postcode.trim()) {
+    if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() ||
+      !form.postcode.trim()) {
       setLocalError('Please fill in all delivery details before continuing.')
       return
     }
@@ -40,7 +44,6 @@ export const CheckoutForm = ({
 
   const nextError = localError || error
 
-  const orderDisabled = isSubmitting || disableCheckout
   return (
     <>
       <div style={styles.body}>
@@ -93,7 +96,6 @@ export const CheckoutForm = ({
                 style={inputStyle('city')}
                 placeholder="City"
               />
-              
               <input
                 type="text"
                 value={form.postcode}
@@ -117,11 +119,14 @@ export const CheckoutForm = ({
         ) : (
           <>
             <h3 style={styles.sectionTitle}>Continue to Payment</h3>
-
-            <div style={styles.group}>
-              Stripe Payment impl here
-            </div>
-
+            <StripePayment
+              form={form}
+              onChange={onChange}
+              onPay={onSubmit}
+              onBack={onBack}
+              isSubmitting={isSubmitting}
+              disableCheckout={disableCheckout}
+            />
             <div style={styles.orderSummaryBox}>
               <div style={styles.summaryRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
               <div style={styles.summaryRow}><span>Delivery</span><span>£{delivery.toFixed(2)}</span></div>
@@ -130,25 +135,14 @@ export const CheckoutForm = ({
           </>
         )}
 
-
-
         {nextError && <p style={styles.formError}>{nextError}</p>}
-      </div >
+      </div>
 
       <div style={styles.footer}>
         <div style={styles.actions}>
           {step === 'info' ? (
             <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
-          ) : (
-            <>
-              <Buttons.primary onClick={onSubmit} title={isSubmitting ? 'Placing Order…' : 'Complete Order'} disabled={orderDisabled} optionalStyles={disableCheckout ? { filter: 'blur(0.25rem)', opacity: 0.7 } : undefined} />
-              {disableCheckout && (
-                <p style={{ margin: 0, color: '#ff7a7a', fontSize: '0.9rem' }}>
-                  Please select a sauce for all chicken items before placing your order.
-                </p>
-              )}
-            </>
-          )}
+          ) : null}
         </div>
       </div>
     </>
@@ -191,11 +185,6 @@ const styles: { [key: string]: CSSProperties } = {
     outline: 'none',
     border: '1px solid var(--orange)',
     boxShadow: '0 0 0 3px rgba(247, 147, 30, 0.1)',
-  },
-  inlineRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
   },
   orderSummaryBox: {
     background: 'var(--dark-grey)',

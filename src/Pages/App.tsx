@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { CheckoutForm } from '../Components/CheckoutForm'
 import { ItemEditor } from '../Components/ItemEditor'
 import { Modal } from '../Components/Modal'
+import { pay } from '../Logic/pay'
 import type { CartItem, OrderForm, Product } from '../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
@@ -88,20 +89,30 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const handleFormChange = (field: keyof OrderForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
-  const handleSubmit = () => {
+  const handlePay = async () => {
     if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() ||
       !form.postcode.trim() || !form.cardNumber.trim() || !form.expiry.trim() || !form.cvv.trim()) {
+      setError('Please complete all delivery and payment details before paying.')
       return
     }
+
     setError('')
     setIsSubmitting(true)
-    window.setTimeout(() => {
-      setIsSubmitting(false)
-      setOrderNumber(Math.floor(1000 + Math.random() * 9000))
-      setModalView('success')
-      setCart([])
-      setForm(emptyForm)
-    }, 900)
+
+    const amountInPence = Math.round(total * 100)
+    const result = await pay(amountInPence)
+
+    setIsSubmitting(false)
+
+    if (!result.success) {
+      setError(result.error || 'Payment failed. Please try again.')
+      return
+    }
+
+    setOrderNumber(Math.floor(1000 + Math.random() * 9000))
+    setModalView('success')
+    setCart([])
+    setForm(emptyForm)
   }
 
   const handleOrderAgain = () => {
@@ -180,13 +191,14 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
             <CheckoutForm
               form={form}
               onChange={handleFormChange}
-              onSubmit={handleSubmit}
+              onSubmit={handlePay}
               onBack={() => setModalView('cart')}
               error={error}
               isSubmitting={isSubmitting}
               subtotal={subtotal}
               delivery={DELIVERY_FEE}
               total={total}
+              disableCheckout={hasMissingChickenSauce}
             />
           )}
 
