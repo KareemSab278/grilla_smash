@@ -1,7 +1,5 @@
 import type { Product, MealOption } from './Types'
 
-
-
 export const products: Product[] = [
     { id: 1, name: 'Original Double Smash', category: 'burgers', price: 5.49, description: 'Two smashed patties, cheese, lettuce, gherkins and signature smash sauce.', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop' },
     { id: 2, name: 'Oklahoma Burger', category: 'burgers', price: 5.99, description: 'Smash patties grilled with onions, cheese, lettuce and smash sauce.', image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&h=400&fit=crop', popular: true },

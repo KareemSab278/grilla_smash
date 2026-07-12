@@ -1,4 +1,4 @@
-export type { Product, CartItem, OrderForm, CheckoutFormProps, Extra, MealSelection, MealOption }
+export type { Product, CartItem, OrderForm, CheckoutFormProps, Extra, MealSelection, MealOption, orderData }
 
 type Extra = {
     name: string
@@ -63,4 +63,22 @@ type CheckoutFormProps = {
     disableCheckout?: boolean
     isPickup: boolean
     onTogglePickup: () => void
+}
+
+
+type orderData = {
+    items: CartItem[]
+    total: number
+    delivery: number
+    subtotal: number
+    isPickup: boolean
+    customer: {
+        fullName: string
+        phone: string
+        email: string
+        address1: string
+        address2?: string
+        city: string
+        postcode: string
+    }
 }
