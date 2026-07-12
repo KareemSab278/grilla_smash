@@ -106,8 +106,8 @@ export const Hero = ({ setActiveCategory }: { setActiveCategory: (category: stri
 export const NoLocation = ({ onContinue }: { onContinue: () => void }) => (
   <main className="no-close-location" style={styles.noLocation}>
     <div style={styles.noLocationContent}>
-      <h1 style={{ marginBottom: '16px', fontSize: '2rem' }}>Location Needed</h1>
-      <p style={{ marginBottom: '24px', lineHeight: 1.7, color: '#4b5563' }}>
+      <h1 style={{ marginBottom: '16px', fontSize: '2rem', color: '#fff' }}>Location Needed</h1>
+      <p style={{ marginBottom: '24px', lineHeight: 1.7, color: '#ffffff' }}>
         We couldn't find a location near you using your shared location, or location access
         may not have been granted. Please allow location access and try again.
       </p>

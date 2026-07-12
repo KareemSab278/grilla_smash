@@ -21,7 +21,7 @@ export const styles: Record<string, CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px',
-    background: '#fff',
+    background: 'radial-gradient(circle at 70% 50%, rgba(247, 147, 30, 0.1) 0%, transparent 60%)',
     color: '#111',
   },
   noLocationContent: {
@@ -30,7 +30,7 @@ export const styles: Record<string, CSSProperties> = {
     textAlign: 'center',
     padding: '32px',
     borderRadius: '18px',
-    boxShadow: '0 20px 60px rgba(15, 23, 42, 0.12)',
+    boxShadow: '0 20px 60px rgba(255, 255, 255, 0.12)',
     border: '1px solid rgba(15, 23, 42, 0.08)',
   },
   nav: {
