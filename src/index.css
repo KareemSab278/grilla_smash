@@ -17,7 +17,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Bebas Neue', sans-serif;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -94,6 +99,30 @@ section h2::after {
   background: var(--orange);
   margin: 10px auto 0;
 }
+
+.primary_button {
+  color: #111111;
+  border: none;
+  padding: 15px 40px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  margin: 0 auto;
+  border-radius: 50px;
+  background: var(--orange);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  height: auto;
+  cursor: pointer;
+}
+
+.primary_button:hover {
+  opacity: 0.95;
+}
+
 
 .about h2::after {
   margin: 10px 0 0;
