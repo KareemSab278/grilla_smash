@@ -69,10 +69,10 @@ const loadedFriesOptions = [
 ]
 
 
-const combos = [
-    { name: 'Loaded Box Deal', price: 9.99, description: 'Any Burger with Loaded Fries and a Drink.' },
-    { name: 'Chicken Box Deal', price: 9.99, description: 'Chicken Burger or Chicken Wrap with Fries and 2 Strips or 3 Wings and a Drink.' },
-]
+// export const combos = [
+//     { name: 'Loaded Box Deal', price: 9.99, description: 'Any Burger with Loaded Fries and a Drink.' },
+//     { name: 'Chicken Box Deal', price: 9.99, description: 'Chicken Burger or Chicken Wrap with Fries and 2 Strips or 3 Wings and a Drink.' },
+// ]
 
 export const extrasByCategory = {
     burgers: burgerAndWrapOptions,
