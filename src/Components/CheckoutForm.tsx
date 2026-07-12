@@ -120,8 +120,6 @@ export const CheckoutForm = ({
           <>
             <h3 style={styles.sectionTitle}>Continue to Payment</h3>
             <StripePayment
-              form={form}
-              onChange={onChange}
               onPay={onSubmit}
               onBack={onBack}
               isSubmitting={isSubmitting}
