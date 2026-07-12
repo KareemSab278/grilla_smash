@@ -2,6 +2,8 @@ const LOCATIONS = {
     'WALSALL': { lat: 52.58538423585385, lng: -1.9832210521368572 }
 }
 
+const MAX_RADIUS_KM = 6;
+
 export const findNearestLocation = async (): Promise<string | false> => {
     const customerLocation = await getUserLocation() as { lat: number, lng: number } | null
     if (!customerLocation) return false
@@ -20,7 +22,7 @@ export const findNearestLocation = async (): Promise<string | false> => {
     }, { name: '', distance: Infinity })
 
 
-    if (nearestLocation.distance <= 10) {
+    if (nearestLocation.distance <= MAX_RADIUS_KM) {
         const found = nearestLocation.name.at(0)?.toUpperCase() + nearestLocation.name.slice(1).toLowerCase()
         return found
     } else {
