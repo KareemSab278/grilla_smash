@@ -20,33 +20,33 @@ export const Shift4Payment = ({
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-  const form = formRef.current
-  if (!form || disableCheckout || isSubmitting) return
+    const form = formRef.current
+    if (!form || disableCheckout || isSubmitting) return
 
-  form.innerHTML = ''
-
-  const script = document.createElement('script')
-  script.src = 'https://dev.shift4.com/checkout.js'
-  script.async = false
-  script.className = 'shift4-button'
-  script.setAttribute('data-class', 'primary_button')
-  script.setAttribute('data-key', import.meta.env.VITE_SHIFT4_PUBLIC_KEY)
-  script.setAttribute('data-client-secret', import.meta.env.VITE_SHIFT4_CLIENT_SECRET ?? '')
-  script.setAttribute('data-name', 'Shift4')
-  script.setAttribute('data-description', 'Checkout example')
-  script.setAttribute('data-checkout-button', `Pay £${total.toFixed(2)}`)
-
-  form.appendChild(script)
-
-  script.onload = () => setLoadError(null)
-  script.onerror = () => setLoadError('Failed to load Shift4 checkout widget.')
-
-  return () => {
     form.innerHTML = ''
-  }
-}, [disableCheckout, isSubmitting, total])
 
-  const checkoutAction = import.meta.env.VITE_SHIFT4_CHECKOUT_ACTION ?? '/examples/checkout-session/payment'
+    const script = document.createElement('script')
+    script.src = 'https://dev.shift4.com/checkout.js'
+    script.async = false
+    script.className = 'shift4-button'
+    script.setAttribute('data-class', 'primary_button')
+    script.setAttribute('data-key', import.meta.env.VITE_SHIFT4_PUBLIC_KEY)
+    script.setAttribute('data-client-secret', import.meta.env.VITE_SHIFT4_CLIENT_SECRET ?? '')
+    script.setAttribute('data-name', 'Shift4')
+    script.setAttribute('data-description', 'Checkout example')
+    script.setAttribute('data-checkout-button', `Pay £${total.toFixed(2)}`)
+
+    form.appendChild(script)
+
+    script.onload = () => setLoadError(null)
+    script.onerror = () => setLoadError('Failed to load Shift4 checkout widget.')
+
+    return () => {
+      form.innerHTML = ''
+    }
+  }, [disableCheckout, isSubmitting, total])
+
+  const checkoutAction = import.meta.env.VITE_API_URL + 'checkout-callback';
 
   return (
     <div style={styles.paymentBody}>

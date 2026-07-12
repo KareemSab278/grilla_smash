@@ -21,7 +21,6 @@ export const findNearestLocation = async (): Promise<string | false> => {
         return nearest
     }, { name: '', distance: Infinity })
 
-
     if (nearestLocation.distance <= MAX_RADIUS_KM) {
         const found = nearestLocation.name.at(0)?.toUpperCase() + nearestLocation.name.slice(1).toLowerCase()
         return found
@@ -30,6 +29,22 @@ export const findNearestLocation = async (): Promise<string | false> => {
     }
 }
 
+export const getDistanceToNearestLocationInKm = async (): Promise<number | null> => {
+    const customerLocation = await getUserLocation() as { lat: number, lng: number } | null
+    if (!customerLocation) return null
+
+    const nearestDistance = Object.values(LOCATIONS).reduce((minimum, locationCoords) => {
+        const distance = getDistanceFromLatLonInKm(
+            customerLocation.lat,
+            customerLocation.lng,
+            locationCoords.lat,
+            locationCoords.lng
+        )
+        return Math.min(minimum, distance)
+    }, Infinity)
+
+    return Number.isFinite(nearestDistance) ? nearestDistance : null
+}
 
 const getUserLocation = async (): Promise<{ lat: number, lng: number } | null> => {
     if (!navigator.geolocation) {
@@ -51,7 +66,7 @@ const getUserLocation = async (): Promise<{ lat: number, lng: number } | null> =
 }
 
 // Helper function to calculate distance between two coordinates
-const getDistanceFromLatLonInKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+export const getDistanceFromLatLonInKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 6371 // Radius of the earth in km
     const dLat = deg2rad(lat2 - lat1)
     const dLon = deg2rad(lon2 - lon1)
