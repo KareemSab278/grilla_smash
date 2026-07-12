@@ -6,9 +6,10 @@ import type { Product } from '../Types'
 interface ProductCardProps {
   product: Product
   onAdd: () => void
+  viewOnly: boolean
 }
 
-export const ProductCard = ({ product, onAdd }: ProductCardProps) => {
+export const ProductCard = ({ product, onAdd, viewOnly }: ProductCardProps) => {
   const [hovered, setHovered] = useState(false)
 
   const cardStyle: CSSProperties = {
@@ -39,9 +40,11 @@ export const ProductCard = ({ product, onAdd }: ProductCardProps) => {
       <h3 style={styles.title}>{product.name}</h3>
       <p style={styles.description}>{product.description}</p>
       <span style={styles.price}>£{product.price.toFixed(2)}</span>
-      <button type="button" style={buttonStyle} onClick={onAdd}>
-        Add to Cart
-      </button>
+      {!viewOnly && (
+        <button type="button" style={buttonStyle} onClick={onAdd}>
+          Add to Cart
+        </button>
+      )}
     </article>
   )
 }

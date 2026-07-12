@@ -8,14 +8,27 @@ import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, S
 import { products } from '../products'
 import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
 import { Elements } from '@stripe/react-stripe-js'
-import {stripeInstance} from '../Logic/stripeInstance'
+import { stripeInstance } from '../Logic/stripeInstance'
 
 const DELIVERY_FEE = 2.5
 
 const emptyForm: OrderForm = {
-  fullName: '', phone: '', email: '', address1: '', address2: '', city: '', postcode: '',
-  cardNumber: '', expiry: '', cvv: '',
+  fullName: '',
+  phone: '',
+  email: '',
+  address1: '',
+  address2: '',
+  city: '',
+  postcode: '',
+  cardNumber: '',
+  expiry: '',
+  cvv: '',
 }
+
+const categories = Array.from(new Set(products.map((p) => p.category))).map((category) => {
+  const label = category.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  return { id: category, label }
+})
 
 export const App = ({ nearestLocation }: { nearestLocation: string | false }) => {
   const [activeCategory, setActiveCategory] = useState('burgers')
@@ -27,6 +40,8 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const [error, setError] = useState('')
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const [viewOnly, setViewOnly] = useState(false) // cant add items to the order, just view the menu and order summary. Used when location is not available or too far away.
 
   const filteredProducts = useMemo(
     () => products.filter((p) => p.category === activeCategory),
@@ -151,15 +166,23 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
         modalView === 'edit' ? 'Customise Item' :
           'Your Order'
 
-  return (
 
-    !nearestLocation
-      ? <NoLocation /> :
+  return (
+    !nearestLocation && !viewOnly
+      ?
+      <NoLocation
+        onContinue={() => { setViewOnly(true); }}
+      />
+      :
       <>
-        <Header cartQuantity={cartQuantity} openCart={openCart} nearestLocation={nearestLocation} />
+        <Header
+          cartQuantity={cartQuantity}
+          openCart={openCart}
+          nearestLocation={nearestLocation}
+          viewOnly={viewOnly}
+        />
 
         <main>
-
           <Hero
             setActiveCategory={setActiveCategory}
           />
@@ -167,6 +190,7 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
           <Featured
             featuredProducts={featuredProducts}
             onAddToCart={addToCart}
+            viewOnly={viewOnly}
           />
 
           <Menu
@@ -175,70 +199,68 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
             filteredProducts={filteredProducts}
             onSetActiveCategory={setActiveCategory}
             addToCart={addToCart}
+            viewOnly={viewOnly}
           />
 
           <About />
-
         </main>
 
         {/* MODAL (cart → edit → checkout → success) */}
-        <Modal
-          open={modalOpen}
-          title={modalTitle}
-          onClose={closeModal}
-          disableClose={modalView === 'checkout'}
-        >
-          {modalView === 'cart' &&
-            <CartSection
-              cart={cart}
-              updateQuantity={updateQuantity}
-              subtotal={subtotal}
-              total={total}
-              DELIVERY_FEE={DELIVERY_FEE}
-              openCheckout={openCheckout}
-              closeModal={closeModal}
-              onEditItem={openEditor}
-            />
-          }
-
-          {modalView === 'edit' && editingItem && (
-            <div style={{ padding: '16px 20px' }}>
-              <ItemEditor
-                cartItem={editingItem}
-                onSave={saveCartItemEdit}
-                onBack={() => { setEditingCartItemId(null); setModalView('cart') }}
-              />
-            </div>
-          )}
-
-          {modalView === 'checkout' && (
-            <Elements stripe={stripeInstance}>
-              <CheckoutForm
-                form={form}
-                onChange={handleFormChange}
-                onSubmit={handlePay}
-                onBack={() => setModalView('cart')}
-                error={error}
-                isSubmitting={isSubmitting}
+        {!viewOnly && (
+          <Modal
+            open={modalOpen}
+            title={modalTitle}
+            onClose={closeModal}
+            disableClose={modalView === 'checkout'}
+          >
+            {modalView === 'cart' &&
+              <CartSection
+                cart={cart}
+                updateQuantity={updateQuantity}
                 subtotal={subtotal}
-                delivery={DELIVERY_FEE}
                 total={total}
-                disableCheckout={hasMissingChickenSauce}
+                DELIVERY_FEE={DELIVERY_FEE}
+                openCheckout={openCheckout}
+                closeModal={closeModal}
+                onEditItem={openEditor}
               />
-            </Elements>
-          )}
+            }
 
-          {modalView === 'success' &&
-            <SuccessMessage orderNumber={orderNumber} handleOrderAgain={handleOrderAgain} />
-          }
-        </Modal>
+            {modalView === 'edit' && editingItem && (
+              <div style={{ padding: '16px 20px' }}>
+                <ItemEditor
+                  cartItem={editingItem}
+                  onSave={saveCartItemEdit}
+                  onBack={() => { setEditingCartItemId(null); setModalView('cart') }}
+                />
+              </div>
+            )}
+
+            {modalView === 'checkout' && (
+              <Elements stripe={stripeInstance}>
+                <CheckoutForm
+                  form={form}
+                  onChange={handleFormChange}
+                  onSubmit={handlePay}
+                  onBack={() => setModalView('cart')}
+                  error={error}
+                  isSubmitting={isSubmitting}
+                  subtotal={subtotal}
+                  delivery={DELIVERY_FEE}
+                  total={total}
+                  disableCheckout={hasMissingChickenSauce}
+                />
+              </Elements>
+            )}
+
+            {modalView === 'success' &&
+              <SuccessMessage orderNumber={orderNumber} handleOrderAgain={handleOrderAgain} />
+            }
+          </Modal>
+        )}
 
         <Footer />
       </>
   )
 }
 
-const categories = Array.from(new Set(products.map((p) => p.category))).map((category) => {
-  const label = category.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-  return { id: category, label }
-})

@@ -26,15 +26,15 @@ export const Footer = () => (
 
 
 
-export const Featured = ({ featuredProducts, onAddToCart }: {
-  featuredProducts: Product[], onAddToCart: (product: Product) => void
+export const Featured = ({ featuredProducts, onAddToCart, viewOnly }: {
+  featuredProducts: Product[], onAddToCart: (product: Product) => void, viewOnly: boolean
 }) => (
   <section className="featured" id="featured" style={styles.featured}>
     <div className="container" style={styles.container}>
       <h2 style={styles.sectionH2}>Customer Favourites</h2>
       <div className="featured-grid" style={styles.featuredGrid}>
         {featuredProducts.map((p) => (
-          <ProductCard key={p.id} product={p} onAdd={() => onAddToCart(p)} />
+          <ProductCard key={p.id} product={p} onAdd={() => onAddToCart(p)} viewOnly={viewOnly} />
         ))}
       </div>
     </div>
@@ -48,9 +48,10 @@ interface MenuProps {
   filteredProducts: Product[]
   onSetActiveCategory: (categoryId: string) => void
   addToCart: (product: Product) => void
+  viewOnly: boolean
 }
 
-export const Menu = ({ categories, onSetActiveCategory, activeCategory, filteredProducts, addToCart }: MenuProps) => (
+export const Menu = ({ categories, onSetActiveCategory, activeCategory, filteredProducts, addToCart, viewOnly }: MenuProps) => (
   <section className="menu" id="menu" style={styles.menu}>
     <div className="container" style={styles.container}>
       <h2 style={styles.sectionH2}>Full Menu</h2>
@@ -66,7 +67,7 @@ export const Menu = ({ categories, onSetActiveCategory, activeCategory, filtered
       </div>
       <div className="product-grid" style={styles.productGrid}>
         {filteredProducts.map((p) => (
-          <ProductCard key={p.id} product={p} onAdd={() => addToCart(p)} />
+          <ProductCard key={p.id} product={p} onAdd={() => addToCart(p)} viewOnly={viewOnly} />
         ))}
       </div>
     </div>
@@ -102,7 +103,7 @@ export const Hero = ({ setActiveCategory }: { setActiveCategory: (category: stri
   </section>
 )
 
-export const NoLocation = () => (
+export const NoLocation = ({ onContinue }: { onContinue: () => void }) => (
   <main className="no-close-location" style={styles.noLocation}>
     <div style={styles.noLocationContent}>
       <h1 style={{ marginBottom: '16px', fontSize: '2rem' }}>Location Needed</h1>
@@ -110,12 +111,17 @@ export const NoLocation = () => (
         We couldn't find a location near you using your shared location, or location access
         may not have been granted. Please allow location access and try again.
       </p>
-      <Buttons.primary onClick={() => window.location.reload()} title="Retry" />
+
+      <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexDirection: 'column' }}>
+        <Buttons.primary onClick={() => window.location.reload()} title="Retry" />
+        <Buttons.secondary onClick={() => onContinue()} title="Continue Without Location" />
+      </div>
+
     </div>
   </main>
 )
 
-export const Header = ({ cartQuantity, openCart, nearestLocation }: { cartQuantity: number, openCart: () => void, nearestLocation: string }) => (
+export const Header = ({ cartQuantity, openCart, nearestLocation, viewOnly }: { cartQuantity: number, openCart: () => void, nearestLocation: string | false, viewOnly: boolean }) => (
   <header style={styles.header}>
     <div className="container nav" style={{ ...styles.container, ...styles.nav }}>
       <div className="logo" style={styles.logo}>
@@ -123,7 +129,7 @@ export const Header = ({ cartQuantity, openCart, nearestLocation }: { cartQuanti
           <span className="orange" style={styles.logoOrange}>GRILL'A</span>&nbsp;
           <span style={styles.logoText}>SMASH</span>
         </div>
-        {nearestLocation && (<div style={styles.locationText}>{nearestLocation}</div>)}
+        {nearestLocation && nearestLocation.length > 0 && !viewOnly && (<div style={styles.locationText}>{nearestLocation}</div>)}
       </div>
       <nav style={styles.navLinks}>
         <a href="#home" style={styles.navLink}>Home</a>
@@ -132,7 +138,7 @@ export const Header = ({ cartQuantity, openCart, nearestLocation }: { cartQuanti
         <a href="#about" style={styles.navLink}>About</a>
       </nav>
 
-      {cartQuantity > 0 ? <Buttons.primary onClick={openCart} title={`My Cart (${cartQuantity})`} /> : <div style={{ width: 180 }}></div>}
+      {cartQuantity > 0 && !viewOnly ? <Buttons.primary onClick={openCart} title={`My Cart (${cartQuantity})`} /> : <div style={{ width: 180 }}></div>}
     </div>
 
   </header>
