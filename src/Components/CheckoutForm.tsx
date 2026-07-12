@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, CSSProperties } from 'react'
 import { Buttons } from './Buttons'
-import { StripePayment } from './StripePayment'
+import { Shift4Payment } from './Shift4Payment'
 
 import type { OrderForm, CheckoutFormProps } from '../Types'
 
@@ -55,7 +55,7 @@ export const CheckoutForm = ({
                 type="text"
                 value={form.fullName}
                 onChange={(e) => field(e, 'fullName', onChange)}
-                title={isSubmitting ? "Processing Payment…" : `Pay £${total.toFixed(2)}`}
+                onFocus={() => setFocusedField('fullName')}
                 onBlur={() => setFocusedField(null)}
                 style={inputStyle('fullName')}
                 placeholder="Full Name"
@@ -118,7 +118,7 @@ export const CheckoutForm = ({
           </>
         ) : (
           <>
-            <StripePayment
+            <Shift4Payment
               onPay={onSubmit}
               onBack={onBack}
               isSubmitting={isSubmitting}

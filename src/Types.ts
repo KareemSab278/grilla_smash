@@ -53,7 +53,7 @@ type OrderForm = {
 type CheckoutFormProps = {
     form: OrderForm
     onChange: (field: keyof OrderForm, value: string) => void
-    onSubmit: (cardElement: any) => Promise<void>
+    onSubmit: (token: string) => Promise<void>
     onBack: () => void
     error?: string
     isSubmitting?: boolean

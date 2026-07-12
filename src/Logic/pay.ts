@@ -1,8 +1,9 @@
-// file will handle stripe payments here
+// handles Shift4 payments
 
 export const pay = async (
-    amount: number
-): Promise<PaymentIntentResponse> => {
+    amount: number,
+    token: string
+): Promise<PaymentResponse> => {
     if (amount <= 0) {
         return {
             success: false,
@@ -11,7 +12,7 @@ export const pay = async (
     }
 
     try {
-        const res = await fetch("http://localhost:3000/api/payments/create-intent", {
+        const res = await fetch("http://localhost:3000/api/payments/charge", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -19,34 +20,31 @@ export const pay = async (
             body: JSON.stringify({
                 amount,
                 currency: "gbp",
+                token,
             }),
         });
 
         if (!res.ok) {
-            return { success: false, error: "Server error creating payment intent." };
+            return { success: false, error: "Server error processing payment." };
         }
 
         const data = await res.json();
 
-        console.log("PaymentIntent response:", data);
+        console.log("Payment response:", data);
 
         return data;
 
     } catch (e) {
-        console.error("Error creating PaymentIntent:", e);
+        console.error("Error processing payment:", e);
 
         return {
             success: false,
-            error: "Failed to start payment. Please try again."
+            error: "Failed to process payment. Please try again."
         };
     }
 };
 
-export type PaymentIntentResponse = {
+export type PaymentResponse = {
     success: boolean;
-    client_secret?: string;
-    payment_intent_id?: string;
-    amount?: number;
-    currency?: string;
     error?: string;
 };

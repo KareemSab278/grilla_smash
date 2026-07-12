@@ -7,8 +7,6 @@ import type { CartItem, OrderForm, Product } from '../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
 import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
-import { Elements } from '@stripe/react-stripe-js'
-import { stripeInstance } from '../Logic/stripeInstance'
 
 const DELIVERY_FEE = 2.5
 
@@ -41,7 +39,7 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [viewOnly, setViewOnly] = useState(false) // cant add items to the order, just view the menu and order summary. Used when location is not available or too far away.
+  const [viewOnly, setViewOnly] = useState(false)
 
   const filteredProducts = useMemo(
     () => products.filter((p) => p.category === activeCategory),
@@ -72,7 +70,6 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
         .filter((i) => i.quantity > 0)
     )
   }
-
 
   const openCart = () => { setModalOpen(true); setModalView('cart') }
 
@@ -106,53 +103,24 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const handleFormChange = (field: keyof OrderForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
+  const handlePay = async (token: string) => {
+    setIsSubmitting(true)
 
+    const amountInPence = Math.round(total * 100)
+    const result = await pay(amountInPence, token)
 
-  const handlePay = async (cardElement: any) => {
-    setIsSubmitting(true);
-
-    const amountInPence = Math.round(total * 100);
-
-    const result = await pay(amountInPence);
-
-    if (!result.success || !result.client_secret) {
-      setError(result.error || "Payment failed");
-      setIsSubmitting(false);
-      return;
+    if (!result.success) {
+      setError(result.error || 'Payment failed')
+      setIsSubmitting(false)
+      return
     }
 
-    const stripe = await stripeInstance;
-
-    if (!stripe) {
-      setError("Stripe failed to load");
-      setIsSubmitting(false);
-      return;
-    }
-
-    const paymentResult = await stripe.confirmCardPayment(
-      result.client_secret,
-      {
-        payment_method: {
-          card: cardElement,
-        },
-      }
-    );
-
-    if (paymentResult.error) {
-      setError(paymentResult.error.message || "Payment failed");
-      setIsSubmitting(false);
-      return;
-    }
-
-    setOrderNumber(Math.floor(1000 + Math.random() * 9000));
-    setModalView("success");
-    setCart([]);
-    setForm(emptyForm);
-
-    setIsSubmitting(false);
-  };
-
-
+    setOrderNumber(Math.floor(1000 + Math.random() * 9000))
+    setModalView('success')
+    setCart([])
+    setForm(emptyForm)
+    setIsSubmitting(false)
+  }
 
   const handleOrderAgain = () => {
     setOrderNumber(null)
@@ -237,20 +205,18 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
             )}
 
             {modalView === 'checkout' && (
-              <Elements stripe={stripeInstance}>
-                <CheckoutForm
-                  form={form}
-                  onChange={handleFormChange}
-                  onSubmit={handlePay}
-                  onBack={() => setModalView('cart')}
-                  error={error}
-                  isSubmitting={isSubmitting}
-                  subtotal={subtotal}
-                  delivery={DELIVERY_FEE}
-                  total={total}
-                  disableCheckout={hasMissingChickenSauce}
-                />
-              </Elements>
+              <CheckoutForm
+                form={form}
+                onChange={handleFormChange}
+                onSubmit={handlePay}
+                onBack={() => setModalView('cart')}
+                error={error}
+                isSubmitting={isSubmitting}
+                subtotal={subtotal}
+                delivery={DELIVERY_FEE}
+                total={total}
+                disableCheckout={hasMissingChickenSauce}
+              />
             )}
 
             {modalView === 'success' &&
@@ -263,4 +229,3 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
       </>
   )
 }
-
