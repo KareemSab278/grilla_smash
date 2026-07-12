@@ -2,12 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { App } from './Pages/App.tsx'
-import { findNearestLocation } from './Logic/locationCheck.ts'
+import { findNearestLocation, getDistanceToNearestLocationInKm } from './Logic/locationCheck.ts'
 
-const nearestLocation = await findNearestLocation()
+const [nearestLocation, distanceKm] = await Promise.all([
+  findNearestLocation(),
+  getDistanceToNearestLocationInKm(),
+])
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App nearestLocation={nearestLocation} />
+    <App nearestLocation={nearestLocation} distanceKm={distanceKm} />
   </StrictMode>,
 )

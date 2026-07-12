@@ -22,6 +22,8 @@ export const CheckoutForm = ({
   delivery,
   total,
   disableCheckout,
+  isPickup,
+  onTogglePickup,
 }: CheckoutFormProps) => {
   const [focusedField, setFocusedField] = useState<keyof OrderForm | null>(null)
   const [step, setStep] = useState<'info' | 'payment'>('info')
@@ -33,8 +35,11 @@ export const CheckoutForm = ({
   })
 
   const handleContinue = () => {
-    if (!form.fullName.trim() || !form.phone.trim() || !form.address1.trim() ||
-      !form.postcode.trim()) {
+    if (!form.fullName.trim() || !form.phone.trim()) {
+      setLocalError('Please fill in your name and phone number before continuing.')
+      return
+    }
+    if (!isPickup && (!form.address1.trim() || !form.postcode.trim())) {
       setLocalError('Please fill in all delivery details before continuing.')
       return
     }
@@ -50,6 +55,24 @@ export const CheckoutForm = ({
         {step === 'info' ? (
           <>
             <h3 style={styles.sectionTitle}>Your Information</h3>
+
+            <div style={styles.toggleRow}>
+              <button
+                type="button"
+                style={{ ...styles.toggleBtn, ...(isPickup ? {} : styles.toggleBtnActive) }}
+                onClick={() => isPickup && onTogglePickup()}
+              >
+                Delivery
+              </button>
+              <button
+                type="button"
+                style={{ ...styles.toggleBtn, ...(isPickup ? styles.toggleBtnActive : {}) }}
+                onClick={() => !isPickup && onTogglePickup()}
+              >
+                Pickup
+              </button>
+            </div>
+
             <div style={styles.group}>
               <input
                 type="text"
@@ -69,42 +92,48 @@ export const CheckoutForm = ({
                 style={inputStyle('phone')}
                 placeholder="Phone Number"
               />
-              <input
-                type="text"
-                value={form.address1}
-                onChange={(e) => field(e, 'address1', onChange)}
-                onFocus={() => setFocusedField('address1')}
-                onBlur={() => setFocusedField(null)}
-                style={inputStyle('address1')}
-                placeholder="Address"
-              />
-              <input
-                type="text"
-                value={form.address2 || ''}
-                onChange={(e) => field(e, 'address2', onChange)}
-                onFocus={() => setFocusedField('address2')}
-                onBlur={() => setFocusedField(null)}
-                style={inputStyle('address2')}
-                placeholder="Address 2 (optional)"
-              />
-              <input
-                type="text"
-                value={form.city}
-                onChange={(e) => field(e, 'city', onChange)}
-                onFocus={() => setFocusedField('city')}
-                onBlur={() => setFocusedField(null)}
-                style={inputStyle('city')}
-                placeholder="City"
-              />
-              <input
-                type="text"
-                value={form.postcode}
-                onChange={(e) => field(e, 'postcode', onChange)}
-                onFocus={() => setFocusedField('postcode')}
-                onBlur={() => setFocusedField(null)}
-                style={inputStyle('postcode')}
-                placeholder="Postcode"
-              />
+
+              {!isPickup && (
+                <>
+                  <input
+                    type="text"
+                    value={form.address1}
+                    onChange={(e) => field(e, 'address1', onChange)}
+                    onFocus={() => setFocusedField('address1')}
+                    onBlur={() => setFocusedField(null)}
+                    style={inputStyle('address1')}
+                    placeholder="Address"
+                  />
+                  <input
+                    type="text"
+                    value={form.address2 || ''}
+                    onChange={(e) => field(e, 'address2', onChange)}
+                    onFocus={() => setFocusedField('address2')}
+                    onBlur={() => setFocusedField(null)}
+                    style={inputStyle('address2')}
+                    placeholder="Address 2"
+                  />
+                  <input
+                    type="text"
+                    value={form.city}
+                    onChange={(e) => field(e, 'city', onChange)}
+                    onFocus={() => setFocusedField('city')}
+                    onBlur={() => setFocusedField(null)}
+                    style={inputStyle('city')}
+                    placeholder="City"
+                  />
+                  <input
+                    type="text"
+                    value={form.postcode}
+                    onChange={(e) => field(e, 'postcode', onChange)}
+                    onFocus={() => setFocusedField('postcode')}
+                    onBlur={() => setFocusedField(null)}
+                    style={inputStyle('postcode')}
+                    placeholder="Postcode"
+                  />
+                </>
+              )}
+
               <input
                 type="text"
                 value={form.email}
@@ -112,7 +141,7 @@ export const CheckoutForm = ({
                 onFocus={() => setFocusedField('email')}
                 onBlur={() => setFocusedField(null)}
                 style={inputStyle('email')}
-                placeholder="Email (optional – for receipt)"
+                placeholder="Email (for receipt)"
               />
             </div>
           </>
@@ -127,7 +156,10 @@ export const CheckoutForm = ({
             />
             <div style={styles.orderSummaryBox}>
               <div style={styles.summaryRow}><span>Subtotal</span><span>£{subtotal.toFixed(2)}</span></div>
-              <div style={styles.summaryRow}><span>Delivery</span><span>£{delivery.toFixed(2)}</span></div>
+              <div style={styles.summaryRow}>
+                <span>{isPickup ? 'Pickup' : 'Delivery'}</span>
+                <span>{delivery === 0 ? 'Free' : `£${delivery.toFixed(2)}`}</span>
+              </div>
               <div style={styles.summaryRowTotal}><span>Total</span><span style={styles.totalValue}>£{total.toFixed(2)}</span></div>
             </div>
           </>
@@ -161,6 +193,27 @@ const styles: { [key: string]: CSSProperties } = {
     fontSize: '1.5rem',
     color: 'var(--orange)',
     marginBottom: '16px',
+  },
+  toggleRow: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '4px',
+  },
+  toggleBtn: {
+    flex: 1,
+    padding: '10px',
+    borderRadius: '8px',
+    border: '2px solid #F7931E',
+    background: 'transparent',
+    color: '#F7931E',
+    fontFamily: 'Poppins, sans-serif',
+    fontSize: '0.95rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  },
+  toggleBtnActive: {
+    background: '#F7931E',
+    color: '#111111',
   },
   group: {
     display: 'flex',

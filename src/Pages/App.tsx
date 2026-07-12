@@ -3,12 +3,11 @@ import { CheckoutForm } from '../Components/CheckoutForm'
 import { ItemEditor } from '../Components/ItemEditor'
 import { Modal } from '../Components/Modal'
 import { pay } from '../Logic/pay'
+import { chargeDeliveryFee } from '../Logic/chargeDeliveryFee'
 import type { CartItem, OrderForm, Product } from '../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
 import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
-
-const DELIVERY_FEE = 2.5
 
 const emptyForm: OrderForm = {
   fullName: '',
@@ -28,7 +27,7 @@ const categories = Array.from(new Set(products.map((p) => p.category))).map((cat
   return { id: category, label }
 })
 
-export const App = ({ nearestLocation }: { nearestLocation: string | false }) => {
+export const App = ({ nearestLocation, distanceKm }: { nearestLocation: string | false, distanceKm: number | null }) => {
   const [activeCategory, setActiveCategory] = useState('burgers')
   const [cart, setCart] = useState<CartItem[]>([])
   const [modalOpen, setModalOpen] = useState(false)
@@ -38,6 +37,7 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const [error, setError] = useState('')
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPickup, setIsPickup] = useState(false)
 
   const [viewOnly, setViewOnly] = useState(false)
 
@@ -49,7 +49,8 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
   const featuredProducts = products.filter((p) => p.popular)
   const cartQuantity = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart])
   const subtotal = useMemo(() => cart.reduce((s, i) => s + getCartItemTotal(i), 0), [cart])
-  const total = useMemo(() => (cart.length > 0 ? subtotal + DELIVERY_FEE : 0), [cart.length, subtotal])
+  const deliveryFee = useMemo(() => chargeDeliveryFee(isPickup ? 0 : distanceKm), [isPickup, distanceKm])
+  const total = useMemo(() => (cart.length > 0 ? subtotal + deliveryFee : 0), [cart.length, subtotal, deliveryFee])
 
   const hasMissingChickenSauce = useMemo(() => cart.some(requiresChickenSauce), [cart])
 
@@ -187,7 +188,7 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
                 updateQuantity={updateQuantity}
                 subtotal={subtotal}
                 total={total}
-                DELIVERY_FEE={DELIVERY_FEE}
+                DELIVERY_FEE={deliveryFee}
                 openCheckout={openCheckout}
                 closeModal={closeModal}
                 onEditItem={openEditor}
@@ -213,9 +214,11 @@ export const App = ({ nearestLocation }: { nearestLocation: string | false }) =>
                 error={error}
                 isSubmitting={isSubmitting}
                 subtotal={subtotal}
-                delivery={DELIVERY_FEE}
+                delivery={deliveryFee}
                 total={total}
                 disableCheckout={hasMissingChickenSauce}
+                isPickup={isPickup}
+                onTogglePickup={() => setIsPickup(p => !p)}
               />
             )}
 

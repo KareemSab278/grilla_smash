@@ -2,7 +2,6 @@ export const chargeDeliveryFee = (distance: number | null) => {
     if (distance === null || distance <= 0) {
         return 0; // this is a pickup order, no delivery fee
     }
-
     // Calculate delivery fee based on distance
     if (distance <= 5) {
         return 2.5; // £2.50 for distances up to 5 miles
@@ -11,5 +10,4 @@ export const chargeDeliveryFee = (distance: number | null) => {
     } else {
         return 10; // £10 for distances over 10 miles
     }
-
 }

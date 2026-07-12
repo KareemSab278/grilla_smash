@@ -61,4 +61,6 @@ type CheckoutFormProps = {
     delivery: number
     total: number
     disableCheckout?: boolean
+    isPickup: boolean
+    onTogglePickup: () => void
 }
