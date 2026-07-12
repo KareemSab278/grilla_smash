@@ -1,30 +1,46 @@
 // file will handle stripe payments here
 
-export const pay = async (amount: number): Promise<PaymentIntentResponse> => {
+export const pay = async (
+    amount: number
+): Promise<PaymentIntentResponse> => {
     if (amount <= 0) {
-        return { success: false, error: 'Amount must be greater than zero.' };
+        return {
+            success: false,
+            error: "Amount must be greater than zero."
+        };
     }
 
     try {
+        const res = await fetch("http://localhost:3000/api/payments/create-intent", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                amount,
+                currency: "gbp",
+            }),
+        });
 
+        if (!res.ok) {
+            return { success: false, error: "Server error creating payment intent." };
+        }
 
-        const response = {
-            success: true,
-            client_secret: 'test_client_secret',
-            payment_intent_id: 'test_payment_intent_id',
-            amount,
-            currency: 'gbp'
-        };
+        const data = await res.json();
 
-        console.log('=====================================');
-        console.log('PaymentIntent response:', response);
-        console.log('=====================================');
-        return response as PaymentIntentResponse;
+        console.log("PaymentIntent response:", data);
+
+        return data;
+
     } catch (e) {
-        console.error('Error creating PaymentIntent:', e);
-        return { success: false, error: 'Failed to start payment. Please try again.' };
+        console.error("Error creating PaymentIntent:", e);
+
+        return {
+            success: false,
+            error: "Failed to start payment. Please try again."
+        };
     }
-}
+};
 
 export type PaymentIntentResponse = {
     success: boolean;

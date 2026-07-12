@@ -1,0 +1,1 @@
+// this will be embedded itno the modal to do a stripe payment. will have a fn param fn to handle the payment in the page.
