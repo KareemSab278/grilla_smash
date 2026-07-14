@@ -87,6 +87,8 @@ export const Shift4Payment = ({
     script.setAttribute('data-name', 'Shift4')
     script.setAttribute('data-description', 'Checkout example')
     script.setAttribute('data-checkout-button', `Pay £${total.toFixed(2)}`)
+    script.setAttribute('data-redirect', 'false')
+    script.setAttribute('data-redirect-url', '')
 
     form.appendChild(script)
 

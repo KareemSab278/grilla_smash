@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CheckoutForm } from '../Components/CheckoutForm'
 import { ItemEditor } from '../Components/ItemEditor'
 import { Modal } from '../Components/Modal'
@@ -8,6 +8,7 @@ import type { CartItem, OrderForm, Product } from '../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
 import { products } from '../products'
 import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
+import { findNearestLocation, getDistanceToNearestLocationInKm } from '../Logic/locationCheck'
 
 const emptyForm: OrderForm = {
   fullName: '',
@@ -27,7 +28,11 @@ const categories = Array.from(new Set(products.map((p) => p.category))).map((cat
   return { id: category, label }
 })
 
-export const App = ({ nearestLocation, distanceKm }: { nearestLocation: string | false, distanceKm: number | null }) => {
+export const App = () => {
+
+  const [nearestLocation, setNearestLocation] = useState<string | false>(false)
+  const [distanceKm, setDistanceKm] = useState<number | null>(null)
+  useEffect(() => { findLocation() }, [])
   const [activeCategory, setActiveCategory] = useState('burgers')
   const [cart, setCart] = useState<CartItem[]>([])
   const [modalOpen, setModalOpen] = useState(false)
@@ -38,7 +43,6 @@ export const App = ({ nearestLocation, distanceKm }: { nearestLocation: string |
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPickup, setIsPickup] = useState(false)
-
   const [viewOnly, setViewOnly] = useState(false)
 
   const filteredProducts = useMemo(
@@ -57,6 +61,16 @@ export const App = ({ nearestLocation, distanceKm }: { nearestLocation: string |
   const editingItem = editingCartItemId !== null
     ? cart.find(i => i.id === editingCartItemId) ?? null
     : null
+
+
+  const findLocation = async () => {
+    const [nearestLocation, distanceKm] = await Promise.all([
+      findNearestLocation(),
+      getDistanceToNearestLocationInKm(),
+    ])
+    nearestLocation && setNearestLocation(nearestLocation)
+    setDistanceKm(distanceKm)
+  }
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
