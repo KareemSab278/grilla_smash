@@ -18,10 +18,62 @@ export const Shift4Payment = ({
 }: Shift4PaymentProps) => {
   const formRef = useRef<HTMLFormElement>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [isPreparingCheckout, setIsPreparingCheckout] = useState(false)
+
+  useEffect(() => {
+    let isActive = true
+    const form = formRef.current
+
+    if (!form || disableCheckout || isSubmitting) {
+      setClientSecret(null)
+      return () => {
+        isActive = false
+      }
+    }
+
+    const fetchClientSecret = async () => {
+      setIsPreparingCheckout(true)
+      setLoadError(null)
+
+      try {
+        const amountInMinorUnits = Math.round(total * 100)
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}checkout-session?amount=${amountInMinorUnits}&currency=GBP`
+        )
+        const data = await response.json()
+
+        if (!response.ok || !data?.success || !data?.clientSecret) {
+          throw new Error(data?.error_message || 'Failed to create checkout session.')
+        }
+
+        if (isActive) {
+          setClientSecret(data.clientSecret)
+        }
+      } catch (error) {
+        if (isActive) {
+          setClientSecret(null)
+          setLoadError(
+            error instanceof Error ? error.message : 'Failed to prepare checkout.'
+          )
+        }
+      } finally {
+        if (isActive) {
+          setIsPreparingCheckout(false)
+        }
+      }
+    }
+
+    void fetchClientSecret()
+
+    return () => {
+      isActive = false
+    }
+  }, [disableCheckout, isSubmitting, total])
 
   useEffect(() => {
     const form = formRef.current
-    if (!form || disableCheckout || isSubmitting) return
+    if (!form || disableCheckout || isSubmitting || !clientSecret) return
 
     form.innerHTML = ''
 
@@ -31,7 +83,7 @@ export const Shift4Payment = ({
     script.className = 'shift4-button'
     script.setAttribute('data-class', 'primary_button')
     script.setAttribute('data-key', import.meta.env.VITE_SHIFT4_PUBLIC_KEY)
-    script.setAttribute('data-client-secret', import.meta.env.VITE_SHIFT4_CLIENT_SECRET ?? '')
+    script.setAttribute('data-checkout-request', clientSecret)
     script.setAttribute('data-name', 'Shift4')
     script.setAttribute('data-description', 'Checkout example')
     script.setAttribute('data-checkout-button', `Pay £${total.toFixed(2)}`)
@@ -44,9 +96,7 @@ export const Shift4Payment = ({
     return () => {
       form.innerHTML = ''
     }
-  }, [disableCheckout, isSubmitting, total])
-
-  const checkoutAction = import.meta.env.VITE_API_URL + 'checkout-callback';
+  }, [clientSecret, disableCheckout, isSubmitting, total])
 
   return (
     <div style={styles.paymentBody}>
@@ -57,10 +107,12 @@ export const Shift4Payment = ({
             ? 'Checkout is disabled for now.'
             : isSubmitting
               ? 'Processing payment…'
-              : 'Use the Shift4 checkout button below to complete payment.'}
+              : isPreparingCheckout
+                ? 'Preparing checkout…'
+                : 'Use the Shift4 checkout button below to complete payment.'}
       </p>
 
-      <form ref={formRef} action={checkoutAction} method="post" />
+      <form ref={formRef} method="post" />
 
       <div style={styles.buttonRow}>
         <Buttons.secondary onClick={onBack} title="Go Back" />
