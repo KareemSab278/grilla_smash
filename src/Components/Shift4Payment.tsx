@@ -16,16 +16,14 @@ export const Shift4Payment = ({
   disableCheckout,
   total,
 }: Shift4PaymentProps) => {
-  const formRef = useRef<HTMLFormElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [isPreparingCheckout, setIsPreparingCheckout] = useState(false)
 
   useEffect(() => {
     let isActive = true
-    const form = formRef.current
-
-    if (!form || disableCheckout || isSubmitting) {
+    if (disableCheckout || isSubmitting) {
       setClientSecret(null)
       return () => {
         isActive = false
@@ -72,10 +70,10 @@ export const Shift4Payment = ({
   }, [disableCheckout, isSubmitting, total])
 
   useEffect(() => {
-    const form = formRef.current
-    if (!form || disableCheckout || isSubmitting || !clientSecret) return
+    const container = containerRef.current
+    if (!container || disableCheckout || isSubmitting || !clientSecret) return
 
-    form.innerHTML = ''
+    container.innerHTML = ''
 
     const script = document.createElement('script')
     script.src = 'https://dev.shift4.com/checkout.js'
@@ -90,13 +88,13 @@ export const Shift4Payment = ({
     script.setAttribute('data-redirect', 'true')
     script.setAttribute('data-redirect-url', `${window.location.origin}/success`)
 
-    form.appendChild(script)
+    container.appendChild(script)
 
     script.onload = () => setLoadError(null)
     script.onerror = () => setLoadError('Failed to load Shift4 checkout widget.')
 
     return () => {
-      form.innerHTML = ''
+      container.innerHTML = ''
     }
   }, [clientSecret, disableCheckout, isSubmitting, total])
 
@@ -114,8 +112,7 @@ export const Shift4Payment = ({
                 : 'Use the Shift4 checkout button below to complete payment.'}
       </p>
 
-      <form ref={formRef} method="post" onSubmit={(e) => e.preventDefault()} />
-
+      <div ref={containerRef} />
       <div style={styles.buttonRow}>
         <Buttons.secondary onClick={onBack} title="Go Back" />
       </div>
