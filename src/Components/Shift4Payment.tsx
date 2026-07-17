@@ -110,11 +110,11 @@ export const Shift4Payment = ({
             : isSubmitting
               ? 'Processing payment…'
               : isPreparingCheckout
-                ? 'Preparing checkout…'
+                ? 'Loading checkout…'
                 : 'Use the Shift4 checkout button below to complete payment.'}
       </p>
 
-      <form ref={formRef} method="post" />
+      <form ref={formRef} method="post" onSubmit={(e) => e.preventDefault()} />
 
       <div style={styles.buttonRow}>
         <Buttons.secondary onClick={onBack} title="Go Back" />

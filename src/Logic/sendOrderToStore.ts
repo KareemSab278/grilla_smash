@@ -1,7 +1,7 @@
 import type { orderData } from '../Types'
 
-const stores: { [key: string]: { MID: string, TEL: string } } = {
-    WALSALL: { MID: '0022887842', TEL: '08000668986' }
+const stores: { [key: string]: { UID: string, TEL: string } } = {
+    WALSALL: { UID: '', TEL: '' }
 }
 
 export const sendOrderToStore = async (storeName: string, orderData: orderData): Promise<void> => {
@@ -12,10 +12,12 @@ export const sendOrderToStore = async (storeName: string, orderData: orderData):
     }
 
     const payload = {
-        MID: store.MID,
+        UID: store.UID,
         TEL: store.TEL,
         orderData
     }
+
+    console.log('Sending order to store:', storeName, payload)
 
     const shift4Url = ''
 
