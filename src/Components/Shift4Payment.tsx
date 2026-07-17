@@ -39,7 +39,7 @@ export const Shift4Payment = ({
       try {
         const amountInMinorUnits = Math.round(total * 100)
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}checkout-session?amount=${amountInMinorUnits}&currency=GBP`
+          `${import.meta.env.VITE_API_URL}payments/checkout-session?amount=${amountInMinorUnits}&currency=GBP`
         )
         const data = await response.json()
 

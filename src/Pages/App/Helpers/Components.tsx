@@ -1,8 +1,8 @@
-import { styles } from './Styles'
-import { ProductCard } from '../Components/Product'
-import type { CartItem, Product } from '../Types'
-import { Buttons } from '../Components/Buttons'
-import { getCartItemTotal } from '../Logic/editor'
+import { styles } from '../Styles'
+import { ProductCard } from '../../../Components/Product'
+import type { CartItem, Product } from '../../../Types'
+import { Buttons } from '../../../Components/Buttons'
+import { getCartItemTotal } from '../../../Logic/editor'
 
 
 export const Footer = () => (
@@ -103,7 +103,7 @@ export const Hero = ({ setActiveCategory }: { setActiveCategory: (category: stri
   </section>
 )
 
-export const NoLocation = ({ onContinue }: { onContinue: () => void }) => (
+export const NoLocation = ({ onTryAgain, onContinue }: { onTryAgain: () => void, onContinue: () => void }) => (
   <main className="no-close-location" style={styles.noLocation}>
     <div style={styles.noLocationContent}>
       <h1 style={{ marginBottom: '16px', fontSize: '2rem', color: '#fff' }}>Location Needed</h1>
@@ -113,7 +113,7 @@ export const NoLocation = ({ onContinue }: { onContinue: () => void }) => (
       </p>
 
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexDirection: 'column' }}>
-        <Buttons.primary onClick={() => window.location.reload()} title="Retry" />
+        <Buttons.primary onClick={() => onTryAgain()} title="Retry" />
         <Buttons.secondary onClick={() => onContinue()} title="Continue Without Location" />
       </div>
 
@@ -269,7 +269,7 @@ export const SuccessMessage = ({ orderNumber, handleOrderAgain }: { orderNumber:
         <div style={styles.orderNumber}>Order #{orderNumber}</div>
         <p>Estimated delivery: <strong>30-45 mins</strong></p>
         <br />
-        <Buttons.primary onClick={handleOrderAgain} title="Order Again" />
+        <Buttons.primary onClick={handleOrderAgain} title="Still Hungry?" />
       </div>
     </div>
   )

@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CheckoutForm } from '../Components/CheckoutForm'
-import { ItemEditor } from '../Components/ItemEditor'
-import { Modal } from '../Components/Modal'
-import { pay } from '../Logic/pay'
-import { chargeDeliveryFee } from '../Logic/chargeDeliveryFee'
-import type { CartItem, OrderForm, Product } from '../Types'
-import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Components'
-import { products } from '../products'
-import { getCartItemTotal, requiresChickenSauce } from '../Logic/editor'
-import { findNearestLocation, getDistanceToNearestLocationInKm } from '../Logic/locationCheck'
+import { CheckoutForm } from '../../Components/CheckoutForm'
+import { ItemEditor } from '../../Components/ItemEditor'
+import { Modal } from '../../Components/Modal'
+import { pay } from '../../Logic/pay'
+import { chargeDeliveryFee } from '../../Logic/chargeDeliveryFee'
+import type { CartItem, OrderForm, Product, MenuResponse } from '../../Types'
+import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Helpers/Components'
+import { getMenu, products } from '../../products'
+import { getCartItemTotal, requiresChickenSauce } from '../../Logic/editor'
+import { findNearestLocation, getDistanceToNearestLocationInKm } from '../../Logic/locationCheck'
 
 const emptyForm: OrderForm = {
   fullName: '',
@@ -23,16 +23,12 @@ const emptyForm: OrderForm = {
   cvv: '',
 }
 
-const categories = Array.from(new Set(products.map((p) => p.category))).map((category) => {
-  const label = category.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-  return { id: category, label }
-})
-
 export const App = () => {
 
   const [nearestLocation, setNearestLocation] = useState<string | false>(false)
   const [distanceKm, setDistanceKm] = useState<number | null>(null)
   useEffect(() => { findLocation() }, [])
+  const [menu, setMenu] = useState<MenuResponse | null>(null)
   const [activeCategory, setActiveCategory] = useState('burgers')
   const [cart, setCart] = useState<CartItem[]>([])
   const [modalOpen, setModalOpen] = useState(false)
@@ -45,12 +41,34 @@ export const App = () => {
   const [isPickup, setIsPickup] = useState(false)
   const [viewOnly, setViewOnly] = useState(false)
 
+  useEffect(() => {
+    const getLiveMenu = async () => {
+      try {
+        const liveMenu = await getMenu()
+        setMenu(liveMenu)
+        if (!liveMenu.products.some((product) => product.category === activeCategory) && liveMenu.products.length > 0) {
+          setActiveCategory(liveMenu.products[0].category)
+        }
+      } catch (error) {
+        console.error('Unable to load live menu:', error)
+      }
+    }
+    getLiveMenu()
+  }, [])
+
+  const productsSource = menu?.products ?? products
+
+  const categories = useMemo(() => Array.from(new Set(productsSource.map((p) => p.category))).map((category) => {
+    const label = category.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+    return { id: category, label }
+  }), [productsSource])
+
   const filteredProducts = useMemo(
-    () => products.filter((p) => p.category === activeCategory),
-    [activeCategory],
+    () => productsSource.filter((p) => p.category === activeCategory),
+    [productsSource, activeCategory],
   )
 
-  const featuredProducts = products.filter((p) => p.popular)
+  const featuredProducts = useMemo(() => productsSource.filter((p) => p.popular), [productsSource])
   const cartQuantity = useMemo(() => cart.reduce((s, i) => s + i.quantity, 0), [cart])
   const subtotal = useMemo(() => cart.reduce((s, i) => s + getCartItemTotal(i), 0), [cart])
   const deliveryFee = useMemo(() => chargeDeliveryFee(isPickup ? 0 : distanceKm), [isPickup, distanceKm])
@@ -154,6 +172,7 @@ export const App = () => {
     !nearestLocation && !viewOnly
       ?
       <NoLocation
+        onTryAgain={() => { findLocation(); }}
         onContinue={() => { setViewOnly(true); }}
       />
       :
@@ -188,7 +207,6 @@ export const App = () => {
           <About />
         </main>
 
-        {/* MODAL (cart → edit → checkout → success) */}
         {!viewOnly && (
           <Modal
             open={modalOpen}

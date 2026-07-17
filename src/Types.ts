@@ -1,23 +1,67 @@
-export type { Product, CartItem, OrderForm, CheckoutFormProps, Extra, MealSelection, MealOption, orderData }
 
-type Extra = {
+
+export type MenuProduct = {
+    id: number;
+    name: string;
+    category: string;
+    price: number;
+    description: string;
+    image: string;
+    popular?: boolean;
+};
+
+
+export type MenuOption = {
+    name: string;
+    price: number;
+    is_protein?: boolean;
+    isProtein?: boolean;
+    category?: string;
+};
+
+
+export type MenuResponse = {
+    products: MenuProduct[];
+
+    mealSideOptions: MealOption[];
+
+    drinkOptions: MealOption[];
+
+    extrasByCategory: {
+        burgers: MenuOption[];
+        wraps: MenuOption[];
+        chicken: {
+            name: string;
+            price: number;
+        }[];
+        "loaded-fries": MenuOption[];
+    };
+
+    mealOptions: {
+        name: string;
+        price: number;
+    }[];
+};
+
+
+export type Extra = {
     name: string
     price: number
     isProtein?: boolean
 }
 
-type MealOption = {
+export type MealOption = {
     id: number
     name: string
     price: number
 }
 
-type MealSelection = {
+export type MealSelection = {
     drink: MealOption
     side: MealOption
 }
 
-type Product = {
+export type Product = {
     id: number
     name: string
     category: string
@@ -28,7 +72,7 @@ type Product = {
     ingredients?: string[]
 }
 
-type CartItem = {
+export type CartItem = {
     id: number
     product: Product
     quantity: number
@@ -37,7 +81,7 @@ type CartItem = {
     sauceChoice?: string
 }
 
-type OrderForm = {
+export type OrderForm = {
     fullName: string
     phone: string
     email: string
@@ -50,7 +94,7 @@ type OrderForm = {
     cvv: string
 }
 
-type CheckoutFormProps = {
+export type CheckoutFormProps = {
     form: OrderForm
     onChange: (field: keyof OrderForm, value: string) => void
     onSubmit: (token: string) => Promise<void>
@@ -66,7 +110,7 @@ type CheckoutFormProps = {
 }
 
 
-type orderData = {
+export type orderData = {
     items: CartItem[]
     total: number
     delivery: number

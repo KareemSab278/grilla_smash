@@ -45,6 +45,8 @@ export const CheckoutForm = ({
     }
     setLocalError('')
     setStep('payment')
+
+    console.log('Checkout form data and cart:', {...form, subtotal, delivery, total})
   }
 
   const nextError = localError || error
