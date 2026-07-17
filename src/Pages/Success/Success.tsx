@@ -4,12 +4,16 @@
 
 import { SuccessMessage } from "../App/Helpers/Components"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const Success = () => {
     const navigate = useNavigate()
     const [orderNumber, setOrderNumber] = useState<number | null>(null)
 
+    useEffect(() => {
+        setOrderNumber(0)
+    }, [])
+    
     const handleOrderAgain = () => {
         navigate('/')
     }
