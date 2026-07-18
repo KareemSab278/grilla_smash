@@ -2,51 +2,79 @@ const LOCATIONS = {
     WALSALL: { lat: 52.58538423585385, lng: -1.9832210521368572 }
 }
 
-const MAX_RADIUS_KM = 6;
-
-export const findNearestLocation = async (): Promise<string | false> => {
-    const customerLocation = await getUserLocation() as { lat: number, lng: number } | null
-    if (!customerLocation) return false
-
-    const nearestLocation = Object.entries(LOCATIONS).reduce((nearest, [locationName, locationCoords]) => {
-        const distance = getDistanceFromLatLonInKm(
-            customerLocation.lat,
-            customerLocation.lng,
-            locationCoords.lat,
-            locationCoords.lng
-        )
-        if (distance < nearest.distance) {
-            return { name: locationName, distance }
-        }
-        return nearest
-    }, { name: '', distance: Infinity })
-
-    if (nearestLocation.distance <= MAX_RADIUS_KM) {
-        const found = nearestLocation.name.at(0)?.toUpperCase() + nearestLocation.name.slice(1).toLowerCase()
-        return found
-    } else {
-        return false
-    }
+const MAX_RADIUS_KM = 10;
+const GEOLOCATION_OPTIONS: PositionOptions = {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0,
 }
 
-export const getDistanceToNearestLocationInKm = async (): Promise<number | null> => {
-    const customerLocation = await getUserLocation() as { lat: number, lng: number } | null
-    if (!customerLocation) return null
+type Coords = {
+    lat: number
+    lng: number
+}
 
-    const nearestDistance = Object.values(LOCATIONS).reduce((minimum, locationCoords) => {
+const formatLocationName = (name: string) =>
+    name.at(0)?.toUpperCase() + name.slice(1).toLowerCase()
+
+const getNearestLocation = (customerLocation: Coords) =>
+    Object.entries(LOCATIONS).reduce(
+        (nearest, [locationName, locationCoords]) => {
+            const distance = getDistanceFromLatLonInKm(
+                customerLocation.lat,
+                customerLocation.lng,
+                locationCoords.lat,
+                locationCoords.lng,
+            )
+            if (distance < nearest.distance) {
+                return { name: locationName, distance }
+            }
+            return nearest
+        },
+        { name: '', distance: Infinity },
+    )
+
+const getNearestDistance = (customerLocation: Coords) =>
+    Object.values(LOCATIONS).reduce((minimum, locationCoords) => {
         const distance = getDistanceFromLatLonInKm(
             customerLocation.lat,
             customerLocation.lng,
             locationCoords.lat,
-            locationCoords.lng
+            locationCoords.lng,
         )
         return Math.min(minimum, distance)
     }, Infinity)
 
-    return Number.isFinite(nearestDistance) ? nearestDistance : null
+export const getNearestLocationAndDistance = async (): Promise<{ nearestLocation: string | false; distanceKm: number | null }> => {
+    const customerLocation = await getUserLocation()
+    if (!customerLocation) {
+        return { nearestLocation: false, distanceKm: null }
+    }
+
+    const nearest = getNearestLocation(customerLocation)
+    const distanceKm = getNearestDistance(customerLocation)
+
+    const nearestLocation = nearest.distance <= MAX_RADIUS_KM
+        ? formatLocationName(nearest.name)
+        : false
+
+    return {
+        nearestLocation,
+        distanceKm: Number.isFinite(distanceKm) ? distanceKm : null,
+    }
 }
 
-const getUserLocation = async (): Promise<{ lat: number, lng: number } | null> => {
+export const findNearestLocation = async (): Promise<string | false> => {
+    const { nearestLocation } = await getNearestLocationAndDistance()
+    return nearestLocation
+}
+
+export const getDistanceToNearestLocationInKm = async (): Promise<number | null> => {
+    const { distanceKm } = await getNearestLocationAndDistance()
+    return distanceKm
+}
+
+const getUserLocation = async (): Promise<Coords | null> => {
     if (!navigator.geolocation) {
         console.error('Geolocation is not supported by this browser.')
         return null
@@ -60,7 +88,8 @@ const getUserLocation = async (): Promise<{ lat: number, lng: number } | null> =
             (error) => {
                 console.error('Error getting location:', error)
                 resolve(null)
-            }
+            },
+            GEOLOCATION_OPTIONS,
         )
     })
 }

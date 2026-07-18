@@ -8,7 +8,7 @@ import type { CartItem, OrderForm, Product, MenuResponse } from '../../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Helpers/Components'
 import { getMenu, products } from '../../products'
 import { getCartItemTotal, requiresChickenSauce } from '../../Logic/editor'
-import { findNearestLocation, getDistanceToNearestLocationInKm } from '../../Logic/locationCheck'
+import { getNearestLocationAndDistance } from '../../Logic/locationCheck'
 import { Loading } from '../../Components/Loading'
 
 const emptyForm: OrderForm = {
@@ -85,13 +85,11 @@ export const App = () => {
 
   const findLocation = async () => {
     setLoading(true)
-    const [nearestLocation, distanceKm] = await Promise.all([
-      findNearestLocation(),
-      getDistanceToNearestLocationInKm(),
-    ])
-    nearestLocation && setNearestLocation(nearestLocation)
+    const { nearestLocation, distanceKm } = await getNearestLocationAndDistance()
+    setNearestLocation(nearestLocation)
     setDistanceKm(distanceKm)
     setLoading(false)
+    console.log('Nearest location:', nearestLocation, 'Distance (km):', distanceKm)
   }
 
   const addToCart = (product: Product) => {

@@ -72,6 +72,16 @@ img {
 }
 
 /* ================= PSEUDO-ELEMENTS & INTERACTIONS ================= */
+.loading-screen {
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 nav a::after {
   content: '';
   position: absolute;
