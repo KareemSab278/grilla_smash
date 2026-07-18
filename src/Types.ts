@@ -126,3 +126,9 @@ export type orderData = {
         postcode: string
     }
 }
+
+export type KdsOrderPayload = {
+  UID: string
+  TEL: string
+  orderData: orderData
+}
