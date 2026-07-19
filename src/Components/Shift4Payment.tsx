@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Buttons } from './Buttons'
 import { pay } from '../Helpers/pay'
-import { useNavigate } from 'react-router-dom'
 
 type Shift4PaymentProps = {
   onBack: () => void
@@ -19,7 +19,30 @@ export const Shift4Payment = ({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [isPreparingCheckout, setIsPreparingCheckout] = useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      console.log('[Shift4] message received:', event.data)
+
+      if (typeof event.data === 'string' && event.data.startsWith('SecurionpaySuccess||')) {
+        try {
+          const json = event.data.slice('SecurionpaySuccess||'.length)
+          const parsed = JSON.parse(json) as { charge?: { id?: string } }
+          const paymentId = parsed?.charge?.id ?? ''
+          navigate(`/success${paymentId ? `?paymentId=${encodeURIComponent(paymentId)}` : ''}`)
+        } catch (e) {
+          console.error('[Shift4] Failed to parse success payload:', e)
+          navigate('/success')
+        }
+        return
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [navigate])
 
   useEffect(() => {
     let isActive = true
@@ -102,7 +125,7 @@ export const Shift4Payment = ({
               : 'Use the Shift4 checkout button below to complete payment.'}
       </p>
 
-      <div ref={containerRef} onSubmit={() => navigate('/success')} />
+      <div ref={containerRef} />
       <div style={styles.buttonRow}>
         <Buttons.secondary onClick={onBack} title="Go Back" />
       </div>

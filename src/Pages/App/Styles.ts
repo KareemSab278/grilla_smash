@@ -408,6 +408,12 @@ export const styles: Record<string, CSSProperties> = {
     color: 'var(--white)',
     margin: '20px 0',
   },
+  paymentId: {
+    color: '#ccc',
+    fontSize: '0.92rem',
+    marginBottom: '16px',
+    wordBreak: 'break-all',
+  },
   editButton: {
     background: 'transparent',
     border: '1px solid rgba(247,147,30,0.4)',

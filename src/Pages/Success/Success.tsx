@@ -36,6 +36,7 @@ const getPaymentIdFromQuery = () => {
 export const Success = () => {
     const navigate = useNavigate()
     const [orderNumber, setOrderNumber] = useState<number | null>(null)
+    const [paymentId, setPaymentId] = useState<string | null>(null)
     const [statusMessage, setStatusMessage] = useState('Finalizing your order...')
 
     useEffect(() => {
@@ -47,11 +48,14 @@ export const Success = () => {
                 return
             }
 
-            const paymentId = getPaymentIdFromQuery()
+            const parsedPaymentId = getPaymentIdFromQuery()
+            setPaymentId(parsedPaymentId ?? pendingOrder.paymentId ?? null)
             const payload: KdsOrderPayload = {
                 ...pendingOrder,
-                paymentId: paymentId ?? pendingOrder.paymentId,
+                paymentId: parsedPaymentId ?? pendingOrder.paymentId,
             }
+
+            console.log('[Order] sending to backend:', JSON.stringify(payload, null, 2))
 
             try {
                 const result = await orders.new(payload)
@@ -79,7 +83,7 @@ export const Success = () => {
 
     return (
         <>
-            <SuccessMessage orderNumber={orderNumber ?? 0} handleOrderAgain={handleOrderAgain} />
+            <SuccessMessage orderNumber={orderNumber ?? 0} paymentId={paymentId} handleOrderAgain={handleOrderAgain} />
             <p style={{ color: '#ccc', textAlign: 'center', marginTop: 12 }}>{statusMessage}</p>
         </>
     )
