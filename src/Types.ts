@@ -20,6 +20,14 @@ export type MenuOption = {
 };
 
 
+export type Branch = {
+    id: string;
+    name: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+};
+
 export type MenuResponse = {
     products: MenuProduct[];
 
@@ -88,8 +96,8 @@ export type OrderForm = {
 export type CheckoutFormProps = {
     form: OrderForm
     onChange: (field: keyof OrderForm, value: string) => void
-    onSubmit: (token: string) => Promise<void>
     onBack: () => void
+    onPrepareOrder: () => void
     error?: string
     isSubmitting?: boolean
     subtotal: number
@@ -107,7 +115,8 @@ export type orderData = {
     subtotal: number
     isPickup: boolean
     customer: customerInfo
-    storeId: number
+    storeId: string
+    status?: 'pending' | 'confirmed' | 'completed' | 'cancelled'
 }
 
 export type CartItem = {
@@ -121,6 +130,8 @@ export type CartItem = {
 
 export type KdsOrderPayload = {
     UID: string
+    TEL?: string
+    paymentId?: string
     orderData: orderData
 }
 
@@ -135,8 +146,7 @@ export type customerInfo = {
 }
 
 export type orderResponse = {
-    status: 200 | 400 | 500 | number
-    order_id?: number
+    order_id?: string
     message?: string
     error?: string
 }

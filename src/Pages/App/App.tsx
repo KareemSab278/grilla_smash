@@ -4,13 +4,16 @@ import { ItemEditor } from '../../Components/ItemEditor'
 import { Modal } from '../../Components/Modal'
 import { pay } from '../../Helpers/pay'
 import { chargeDeliveryFee } from '../../Logic/chargeDeliveryFee'
-import type { CartItem, OrderForm, Product, MenuResponse } from '../../Types'
+import type { CartItem, KdsOrderPayload, OrderForm, Product, MenuResponse } from '../../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Helpers/Components'
 import { getMenu, products } from '../../Helpers/menu'
 import { getCartItemTotal, requiresChickenSauce } from '../../Logic/editor'
 import { getNearestLocationAndDistance } from '../../Logic/locationCheck'
 import { Loading } from '../../Components/Loading'
 import { orders } from '../../Helpers/order'
+
+const ORDER_STORAGE_KEY = 'grilla_pending_order'
+const STORE_UID = import.meta.env.VITE_STORE_UID ?? 'GRILLA_SMASH'
 
 const emptyForm: OrderForm = {
   fullName: '',
@@ -43,7 +46,8 @@ export const App = () => {
   const [isPickup, setIsPickup] = useState(false)
   const [viewOnly, setViewOnly] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [storeId, setStoreId] = useState<number>(1);
+  const [storeId, setStoreId] = useState<string>('1')
+
 
   useEffect(() => {
     const getLiveMenu = async () => {
@@ -87,9 +91,12 @@ export const App = () => {
 
   const findLocation = async () => {
     setLoading(true)
-    const { nearestLocation, distanceKm } = await getNearestLocationAndDistance()
+    const { nearestLocation, distanceKm, branchId } = await getNearestLocationAndDistance()
     setNearestLocation(nearestLocation)
     setDistanceKm(distanceKm)
+    if (branchId) {
+      setStoreId(branchId)
+    }
     setLoading(false)
   }
 
@@ -139,52 +146,34 @@ export const App = () => {
   const handleFormChange = (field: keyof OrderForm, value: string) =>
     setForm((prev) => ({ ...prev, [field]: value }))
 
-  const handlePay = async (token: string) => {
-    setIsSubmitting(true)
-
-    const result = await pay.makePayment(total, token)
-
-    if (!result.success || result.error) {
-      setError(result.error || 'Payment failed')
-      setIsSubmitting(false)
-      return
-    }
-
-    const orderSent = await orders.new({ // expects orderData and uid
-      orderData: {
-        items: cart,
-        total,
-        delivery: deliveryFee,
-        subtotal,
-        isPickup,
-        customer: {
-          fullName: form.fullName,
-          phone: form.phone,
-          email: form.email,
-          address1: form.address1,
-          address2: form.address2,
-          city: form.city,
-          postcode: form.postcode,
-        },
-        storeId: storeId,
+  const buildPendingOrderPayload = (): KdsOrderPayload => ({
+    UID: STORE_UID,
+    orderData: {
+      items: cart,
+      total,
+      delivery: deliveryFee,
+      subtotal,
+      isPickup,
+      customer: {
+        fullName: form.fullName,
+        phone: form.phone,
+        email: form.email,
+        address1: form.address1,
+        address2: form.address2,
+        city: form.city,
+        postcode: form.postcode,
       },
-      UID: import.meta.env.VITE_STORE_UID ?? 'GRILLA_SMASH',
-    })
+      storeId,
+      status: 'pending',
+    },
+  })
 
-    if (![200, 201].includes(orderSent.status)) {
-      setError(orderSent.error || 'Failed to send order')
-      setIsSubmitting(false)
-      return
+  const savePendingOrder = () => {
+    try {
+      sessionStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(buildPendingOrderPayload()))
+    } catch (error) {
+      console.error('Unable to save pending order:', error)
     }
-
-    if (orderSent.order_id) {
-      setOrderNumber(orderSent.order_id ?? null)
-    }
-
-    setModalView('success')
-    setCart([])
-    setForm(emptyForm)
-    setIsSubmitting(false)
   }
 
   const handleOrderAgain = () => {
@@ -278,7 +267,7 @@ export const App = () => {
                 <CheckoutForm
                   form={form}
                   onChange={handleFormChange}
-                  onSubmit={handlePay}
+                  onPrepareOrder={savePendingOrder}
                   onBack={() => setModalView('cart')}
                   error={error}
                   isSubmitting={isSubmitting}

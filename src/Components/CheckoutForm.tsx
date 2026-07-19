@@ -14,8 +14,8 @@ const field = (
 export const CheckoutForm = ({
   form,
   onChange,
-  onSubmit,
   onBack,
+  onPrepareOrder,
   error,
   isSubmitting,
   subtotal,
@@ -43,6 +43,7 @@ export const CheckoutForm = ({
       setLocalError('Please fill in all delivery details before continuing.')
       return
     }
+    onPrepareOrder()
     setLocalError('')
     setStep('payment')
 
@@ -150,7 +151,6 @@ export const CheckoutForm = ({
         ) : (
           <>
             <Shift4Payment
-              onPay={onSubmit}
               onBack={onBack}
               isSubmitting={isSubmitting}
               disableCheckout={disableCheckout}

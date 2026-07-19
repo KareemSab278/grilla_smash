@@ -4,7 +4,6 @@ import { Buttons } from './Buttons'
 import { pay } from '../Helpers/pay'
 
 type Shift4PaymentProps = {
-  onPay: (token: string) => Promise<void>
   onBack: () => void
   isSubmitting?: boolean
   disableCheckout?: boolean

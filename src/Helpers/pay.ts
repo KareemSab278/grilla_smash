@@ -9,6 +9,8 @@ export const pay = {
         const response = await fetch(
             `${import.meta.env.VITE_API_URL}payments/checkout-session?amount=${Math.round(total * 100)}&currency=GBP`
         )
+
+        console.log('Checkout session response:', response);
         const data = await response.json()
 
         if (!response.ok || !data?.success || !data?.clientSecret) {

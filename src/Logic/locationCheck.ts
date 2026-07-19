@@ -8,6 +8,11 @@ type Branch = {
     longitude: number;
 };
 
+type NearestResult = {
+    name: string
+    distance: number
+    branchId: string
+}
 
 const LOCATIONS: Branch[] = await branch.getBranches();
 
@@ -27,7 +32,7 @@ type Coords = {
 const formatLocationName = (name: string) =>
     name.at(0)?.toUpperCase() + name.slice(1).toLowerCase()
 
-const getNearestLocation = (customerLocation: Coords) =>
+const getNearestLocation = (customerLocation: Coords): NearestResult =>
     LOCATIONS.reduce((nearest, location) => {
         const locationName = location.name;
         const locationCoords = { latitude: location.latitude, longitude: location.longitude };
@@ -38,11 +43,11 @@ const getNearestLocation = (customerLocation: Coords) =>
             locationCoords.longitude,
         )
         if (distance < nearest.distance) {
-            return { name: locationName, distance }
+            return { name: locationName, distance, branchId: location.id }
         }
         return nearest
     },
-        { name: '', distance: Infinity },
+        { name: '', distance: Infinity, branchId: '' },
     )
 
 const getNearestDistance = (customerLocation: Coords) =>
@@ -56,10 +61,10 @@ const getNearestDistance = (customerLocation: Coords) =>
         return Math.min(minimum, distance)
     }, Infinity)
 
-export const getNearestLocationAndDistance = async (): Promise<{ nearestLocation: string | false; distanceKm: number | null }> => {
+export const getNearestLocationAndDistance = async (): Promise<{ nearestLocation: string | false; distanceKm: number | null; branchId: string | null }> => {
     const customerLocation = await getUserLocation()
     if (!customerLocation) {
-        return { nearestLocation: false, distanceKm: null }
+        return { nearestLocation: false, distanceKm: null, branchId: null }
     }
 
     const nearest = getNearestLocation(customerLocation)
@@ -72,6 +77,7 @@ export const getNearestLocationAndDistance = async (): Promise<{ nearestLocation
     return {
         nearestLocation,
         distanceKm: Number.isFinite(distanceKm) ? distanceKm : null,
+        branchId: nearest.branchId || null,
     }
 }
 
