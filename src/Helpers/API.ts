@@ -12,6 +12,7 @@ export const API = {
             throw new Error(checkedResponse.message);
         }
 
+        console.log('GET RESPONSE FOR ', endpoint, response);
         return response.json();
     },
     post: async (endpoint: string, options: RequestInit = {}) => {
@@ -29,7 +30,7 @@ export const API = {
         if (!checkedResponse.success) {
             throw new Error(checkedResponse.message);
         }
-
+        console.log('POST RESPONSE FOR ', endpoint, response);
         return response.json();
     }
 };

@@ -43,6 +43,7 @@ export const App = () => {
   const [isPickup, setIsPickup] = useState(false)
   const [viewOnly, setViewOnly] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [storeId, setStoreId] = useState<number>(1);
 
   useEffect(() => {
     const getLiveMenu = async () => {
@@ -150,11 +151,27 @@ export const App = () => {
     }
 
     const orderSent = await orders.new({ // expects orderData and uid
-      orderData: cart,
-      UID: storeId,
+      orderData: {
+        items: cart,
+        total,
+        delivery: deliveryFee,
+        subtotal,
+        isPickup,
+        customer: {
+          fullName: form.fullName,
+          phone: form.phone,
+          email: form.email,
+          address1: form.address1,
+          address2: form.address2,
+          city: form.city,
+          postcode: form.postcode,
+        },
+        storeId: storeId,
+      },
+      UID: import.meta.env.VITE_STORE_UID ?? 'GRILLA_SMASH',
     })
 
-    if (orderSent.status !== 200) {
+    if (![200, 201].includes(orderSent.status)) {
       setError(orderSent.error || 'Failed to send order')
       setIsSubmitting(false)
       return

@@ -1,8 +1,18 @@
-const LOCATIONS = {
-    WALSALL: { lat: 52.58538423585385, lng: -1.9832210521368572 }
-}
+import { branch } from '../Helpers/branch';
+
+type Branch = {
+    id: string;
+    name: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+};
+
+
+const LOCATIONS: Branch[] = await branch.getBranches();
 
 const MAX_RADIUS_KM = 10;
+
 const GEOLOCATION_OPTIONS: PositionOptions = {
     enableHighAccuracy: true,
     timeout: 10000,
@@ -10,37 +20,38 @@ const GEOLOCATION_OPTIONS: PositionOptions = {
 }
 
 type Coords = {
-    lat: number
-    lng: number
+    latitude: number
+    longitude: number
 }
 
 const formatLocationName = (name: string) =>
     name.at(0)?.toUpperCase() + name.slice(1).toLowerCase()
 
 const getNearestLocation = (customerLocation: Coords) =>
-    Object.entries(LOCATIONS).reduce(
-        (nearest, [locationName, locationCoords]) => {
-            const distance = getDistanceFromLatLonInKm(
-                customerLocation.lat,
-                customerLocation.lng,
-                locationCoords.lat,
-                locationCoords.lng,
-            )
-            if (distance < nearest.distance) {
-                return { name: locationName, distance }
-            }
-            return nearest
-        },
+    LOCATIONS.reduce((nearest, location) => {
+        const locationName = location.name;
+        const locationCoords = { latitude: location.latitude, longitude: location.longitude };
+        const distance = getDistanceFromLatLonInKm(
+            customerLocation.latitude,
+            customerLocation.longitude,
+            locationCoords.latitude,
+            locationCoords.longitude,
+        )
+        if (distance < nearest.distance) {
+            return { name: locationName, distance }
+        }
+        return nearest
+    },
         { name: '', distance: Infinity },
     )
 
 const getNearestDistance = (customerLocation: Coords) =>
     Object.values(LOCATIONS).reduce((minimum, locationCoords) => {
         const distance = getDistanceFromLatLonInKm(
-            customerLocation.lat,
-            customerLocation.lng,
-            locationCoords.lat,
-            locationCoords.lng,
+            customerLocation.latitude,
+            customerLocation.longitude,
+            locationCoords.latitude,
+            locationCoords.longitude,
         )
         return Math.min(minimum, distance)
     }, Infinity)
@@ -83,7 +94,7 @@ const getUserLocation = async (): Promise<Coords | null> => {
     return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                resolve({ lat: position.coords.latitude, lng: position.coords.longitude })
+                resolve({ latitude: position.coords.latitude, longitude: position.coords.longitude })
             },
             (error) => {
                 console.error('Error getting location:', error)
