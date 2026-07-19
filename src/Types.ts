@@ -72,15 +72,6 @@ export type Product = {
     ingredients?: string[]
 }
 
-export type CartItem = {
-    id: number
-    product: Product
-    quantity: number
-    extras?: Extra[]
-    meal?: MealSelection | null
-    sauceChoice?: string
-}
-
 export type OrderForm = {
     fullName: string
     phone: string
@@ -109,26 +100,43 @@ export type CheckoutFormProps = {
     onTogglePickup: () => void
 }
 
-
 export type orderData = {
     items: CartItem[]
     total: number
     delivery: number
     subtotal: number
     isPickup: boolean
-    customer: {
-        fullName: string
-        phone: string
-        email: string
-        address1: string
-        address2?: string
-        city: string
-        postcode: string
-    }
+    customer: customerInfo
+    storeId: number
+}
+
+export type CartItem = {
+    id: number
+    product: Product
+    quantity: number
+    extras?: Extra[]
+    meal?: MealSelection | null
+    sauceChoice?: string
 }
 
 export type KdsOrderPayload = {
-  UID: string
-  TEL: string
-  orderData: orderData
+    UID: string
+    orderData: orderData
+}
+
+export type customerInfo = {
+    fullName: string
+    phone: string
+    email: string
+    address1: string
+    address2?: string
+    city: string
+    postcode: string
+}
+
+export type orderResponse = {
+    status: 200 | 400 | 500 | number
+    order_id?: number
+    message?: string
+    error?: string
 }

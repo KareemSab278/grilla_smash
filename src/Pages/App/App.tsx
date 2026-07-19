@@ -2,14 +2,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { CheckoutForm } from '../../Components/CheckoutForm'
 import { ItemEditor } from '../../Components/ItemEditor'
 import { Modal } from '../../Components/Modal'
-import { pay } from '../../Logic/pay'
+import { pay } from '../../Helpers/pay'
 import { chargeDeliveryFee } from '../../Logic/chargeDeliveryFee'
 import type { CartItem, OrderForm, Product, MenuResponse } from '../../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Helpers/Components'
-import { getMenu, products } from '../../products'
+import { getMenu, products } from '../../Helpers/menu'
 import { getCartItemTotal, requiresChickenSauce } from '../../Logic/editor'
 import { getNearestLocationAndDistance } from '../../Logic/locationCheck'
 import { Loading } from '../../Components/Loading'
+import { orders } from '../../Helpers/order'
 
 const emptyForm: OrderForm = {
   fullName: '',
@@ -89,7 +90,6 @@ export const App = () => {
     setNearestLocation(nearestLocation)
     setDistanceKm(distanceKm)
     setLoading(false)
-    console.log('Nearest location:', nearestLocation, 'Distance (km):', distanceKm)
   }
 
   const addToCart = (product: Product) => {
@@ -141,16 +141,29 @@ export const App = () => {
   const handlePay = async (token: string) => {
     setIsSubmitting(true)
 
-    const amountInPence = Math.round(total * 100)
-    const result = await pay(amountInPence, token)
+    const result = await pay.makePayment(total, token)
 
-    if (!result.success) {
+    if (!result.success || result.error) {
       setError(result.error || 'Payment failed')
       setIsSubmitting(false)
       return
     }
 
-    setOrderNumber(Math.floor(1000 + Math.random() * 9000))
+    const orderSent = await orders.new({ // expects orderData and uid
+      orderData: cart,
+      UID: storeId,
+    })
+
+    if (orderSent.status !== 200) {
+      setError(orderSent.error || 'Failed to send order')
+      setIsSubmitting(false)
+      return
+    }
+
+    if (orderSent.order_id) {
+      setOrderNumber(orderSent.order_id ?? null)
+    }
+
     setModalView('success')
     setCart([])
     setForm(emptyForm)

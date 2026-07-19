@@ -4,7 +4,7 @@ import {
     canMakeItAMeal, getAvailableExtras, getCartItemTotal, MEAL_PRICE_INCREASE,
 } from '../Logic/editor'
 import { Buttons } from './Buttons'
-import {drinkOptions, mealSideOptions, chickenSauceOptions} from "../products";
+import { drinkOptions, mealSideOptions, chickenSauceOptions } from "../Helpers/menu";
 
 interface ItemEditorProps {
     cartItem: CartItem
@@ -23,7 +23,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const isChicken = cartItem.product.category === 'chicken'
     const mealEligible = canMakeItAMeal(cartItem.product)
     const sauceMissing = isChicken && !sauceChoice
-    
+
 
     const selectedProteinExtra = selectedExtras.find(e => e.isProtein)
     const toggleExtra = (extra: Extra) => {
@@ -55,7 +55,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
     const canSave = (!isChicken || !!sauceChoice) && (!isMeal || (selectedDrink !== null && selectedSide !== null))
 
     return (
-        <div style={{ padding: '0 4px', display: 'flex', flexDirection: 'column'}}>
+        <div style={{ padding: '0 4px', display: 'flex', flexDirection: 'column' }}>
 
             {/* Item info */}
             <div style={{ display: 'flex', gap: 14, alignItems: 'center', padding: '16px 0', borderBottom: '1px solid #2a2a2a' }}>
@@ -152,7 +152,7 @@ export const ItemEditor = ({ cartItem, onSave, onBack }: ItemEditorProps) => {
                                 Add a side & drink for £{MEAL_PRICE_INCREASE.toFixed(2)}
                             </p>
                         </div>
-                        <ToggleSwitch on={isMeal} onToggle={() => {setIsMeal(p => !p)}} />
+                        <ToggleSwitch on={isMeal} onToggle={() => { setIsMeal(p => !p) }} />
                     </div>
 
                     {isMeal && (

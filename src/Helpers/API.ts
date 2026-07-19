@@ -1,17 +1,37 @@
 const url = import.meta.env.VITE_API_URL || 'http://localhost:6969/api/';
 
 
-export const call = async (endpoint: string, options: RequestInit = {}) => {
+export const API = {
 
-    const response = await fetch(`${url}${endpoint.startsWith('/') ? endpoint.slice(1) : endpoint}`, options);
+    get: async (endpoint: string, options: RequestInit = {}) => {
+        const response = await fetch(`${url}${endpoint.startsWith('/') ? endpoint.slice(1) : endpoint}`, options);
 
-    const checkedResponse = await checkResponse(response);
+        const checkedResponse = await checkResponse(response);
 
-    if (!checkedResponse.success) {
-        throw new Error(checkedResponse.message);
+        if (!checkedResponse.success) {
+            throw new Error(checkedResponse.message);
+        }
+
+        return response.json();
+    },
+    post: async (endpoint: string, options: RequestInit = {}) => {
+        const response = await fetch(`${url}${endpoint.startsWith('/') ? endpoint.slice(1) : endpoint}`, {
+            ...options,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options.headers || {}),
+            },
+        });
+
+        const checkedResponse = await checkResponse(response);
+
+        if (!checkedResponse.success) {
+            throw new Error(checkedResponse.message);
+        }
+
+        return response.json();
     }
-
-    return response.json();
 };
 
 

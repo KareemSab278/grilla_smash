@@ -1,27 +1,6 @@
-import type { Product, MealOption, MenuResponse, MenuProduct, MenuOption } from './Types'
-import { call } from './Helpers/call'
+import { API } from './API';
+import type { MenuResponse, MenuProduct, MenuOption, MealOption, Product } from '../Types';
 
-const normalizeMealOptions = (items: { id?: number; name: string; price: number }[] = []): MealOption[] =>
-    items.map((item, index) => ({
-        id: item.id ?? index + 1,
-        name: item.name,
-        price: item.price,
-    }))
-
-const normalizeExtras = (items: any[] = []): MenuOption[] =>
-    items.map((item) => ({
-        name: item.name,
-        price: item.price,
-        category: item.category,
-        is_protein: item.is_protein ?? item.isProtein,
-        isProtein: item.isProtein ?? item.is_protein,
-    }))
-
-export const products: Product[] = []
-
-export const mealSideOptions: MealOption[] = []
-
-export const drinkOptions: MealOption[] = []
 
 export const extrasByCategory: {
     burgers: MenuOption[]
@@ -42,13 +21,38 @@ export const mealOptions: {
 
 export const chickenSauceOptions: string[] = ['Lemon & Herb', 'Mild', 'Wild', 'Honey Sriracha']
 
+export const products: Product[] = []
+
+export const mealSideOptions: MealOption[] = []
+
+export const drinkOptions: MealOption[] = []
+
+
+
+const normalizeMealOptions = (items: { id?: number; name: string; price: number }[] = []): MealOption[] =>
+    items.map((item, index) => ({
+        id: item.id ?? index + 1,
+        name: item.name,
+        price: item.price,
+    }))
+
+const normalizeExtras = (items: any[] = []): MenuOption[] =>
+    items.map((item) => ({
+        name: item.name,
+        price: item.price,
+        category: item.category,
+        is_protein: item.is_protein ?? item.isProtein,
+        isProtein: item.isProtein ?? item.is_protein,
+    }))
+
+
 export const getMenu = async (): Promise<MenuResponse> => {
     try {
-        const response = await call('menu');
+        const response = await API.get('menu');
         console.log('Menu response:', response);
 
         const liveProducts: MenuProduct[] = response.products ?? []
-        products.splice(0, products.length, ...liveProducts)
+
 
         const liveMealSideOptions = normalizeMealOptions(response.mealSideOptions ?? [])
         mealSideOptions.splice(0, mealSideOptions.length, ...liveMealSideOptions)

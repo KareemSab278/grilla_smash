@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Buttons } from './Buttons'
+import { pay } from '../Helpers/pay'
 
 type Shift4PaymentProps = {
   onPay: (token: string) => Promise<void>
@@ -35,15 +36,7 @@ export const Shift4Payment = ({
       setLoadError(null)
 
       try {
-        const amountInMinorUnits = Math.round(total * 100)
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}payments/checkout-session?amount=${amountInMinorUnits}&currency=GBP`
-        )
-        const data = await response.json()
-
-        if (!response.ok || !data?.success || !data?.clientSecret) {
-          throw new Error(data?.error_message || 'Failed to create checkout session.')
-        }
+        const data = await pay.startCheckout(total)
 
         if (isActive) {
           setClientSecret(data.clientSecret)

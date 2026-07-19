@@ -1,5 +1,5 @@
 import type { Product, CartItem, Extra } from "../Types"
-import { extrasByCategory, chickenSauceOptions, drinkOptions, mealSideOptions } from "../products"
+import { extrasByCategory, chickenSauceOptions, drinkOptions, mealSideOptions } from "../Helpers/menu"
 
 export const MEAL_PRICE_INCREASE = 2.50
 
