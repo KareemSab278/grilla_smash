@@ -99,7 +99,6 @@ export type CheckoutFormProps = {
     onBack: () => void
     onPrepareOrder: () => void
     error?: string
-    isSubmitting?: boolean
     subtotal: number
     delivery: number
     total: number

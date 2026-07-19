@@ -2,17 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Buttons } from './Buttons'
 import { pay } from '../Helpers/pay'
+import { useNavigate } from 'react-router-dom'
 
 type Shift4PaymentProps = {
   onBack: () => void
-  isSubmitting?: boolean
   disableCheckout?: boolean
   total: number
 }
 
 export const Shift4Payment = ({
   onBack,
-  isSubmitting,
   disableCheckout,
   total,
 }: Shift4PaymentProps) => {
@@ -20,10 +19,11 @@ export const Shift4Payment = ({
   const [loadError, setLoadError] = useState<string | null>(null)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [isPreparingCheckout, setIsPreparingCheckout] = useState(false)
+  const navigate = useNavigate();
 
   useEffect(() => {
     let isActive = true
-    if (disableCheckout || isSubmitting) {
+    if (disableCheckout) {
       setClientSecret(null)
       return () => {
         isActive = false
@@ -59,11 +59,11 @@ export const Shift4Payment = ({
     return () => {
       isActive = false
     }
-  }, [disableCheckout, isSubmitting, total])
+  }, [disableCheckout, total])
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container || disableCheckout || isSubmitting || !clientSecret) return
+    if (!container || disableCheckout || !clientSecret) return
 
     container.innerHTML = ''
 
@@ -88,7 +88,7 @@ export const Shift4Payment = ({
     return () => {
       container.innerHTML = ''
     }
-  }, [clientSecret, disableCheckout, isSubmitting, total])
+  }, [clientSecret, disableCheckout, total])
 
   return (
     <div style={styles.paymentBody}>
@@ -97,14 +97,12 @@ export const Shift4Payment = ({
           ? loadError
           : disableCheckout
             ? 'Checkout is disabled for now.'
-            : isSubmitting
-              ? 'Processing payment…'
-              : isPreparingCheckout
-                ? 'Loading checkout…'
-                : 'Use the Shift4 checkout button below to complete payment.'}
+            : isPreparingCheckout
+              ? 'Loading checkout…'
+              : 'Use the Shift4 checkout button below to complete payment.'}
       </p>
 
-      <div ref={containerRef} />
+      <div ref={containerRef} onSubmit={() => navigate('/success')} />
       <div style={styles.buttonRow}>
         <Buttons.secondary onClick={onBack} title="Go Back" />
       </div>

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { CheckoutForm } from '../../Components/CheckoutForm'
 import { ItemEditor } from '../../Components/ItemEditor'
 import { Modal } from '../../Components/Modal'
-import { pay } from '../../Helpers/pay'
 import { chargeDeliveryFee } from '../../Logic/chargeDeliveryFee'
 import type { CartItem, KdsOrderPayload, OrderForm, Product, MenuResponse } from '../../Types'
 import { About, CartSection, Featured, Footer, Header, Hero, Menu, NoLocation, SuccessMessage } from './Helpers/Components'
@@ -10,7 +9,6 @@ import { getMenu, products } from '../../Helpers/menu'
 import { getCartItemTotal, requiresChickenSauce } from '../../Logic/editor'
 import { getNearestLocationAndDistance } from '../../Logic/locationCheck'
 import { Loading } from '../../Components/Loading'
-import { orders } from '../../Helpers/order'
 
 const ORDER_STORAGE_KEY = 'grilla_pending_order'
 const STORE_UID = import.meta.env.VITE_STORE_UID ?? 'GRILLA_SMASH'
@@ -42,7 +40,6 @@ export const App = () => {
   const [form, setForm] = useState<OrderForm>(emptyForm)
   const [error, setError] = useState('')
   const [orderNumber, setOrderNumber] = useState<number | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPickup, setIsPickup] = useState(false)
   const [viewOnly, setViewOnly] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -270,7 +267,6 @@ export const App = () => {
                   onPrepareOrder={savePendingOrder}
                   onBack={() => setModalView('cart')}
                   error={error}
-                  isSubmitting={isSubmitting}
                   subtotal={subtotal}
                   delivery={deliveryFee}
                   total={total}

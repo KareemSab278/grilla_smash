@@ -17,7 +17,6 @@ export const CheckoutForm = ({
   onBack,
   onPrepareOrder,
   error,
-  isSubmitting,
   subtotal,
   delivery,
   total,
@@ -152,7 +151,6 @@ export const CheckoutForm = ({
           <>
             <Shift4Payment
               onBack={onBack}
-              isSubmitting={isSubmitting}
               disableCheckout={disableCheckout}
               total={total}
             />
@@ -174,8 +172,8 @@ export const CheckoutForm = ({
         <div style={styles.actions}>
           {step === 'info' ? (
             <>
-              <Buttons.primary onClick={handleContinue} title="Continue to Payment" disabled={isSubmitting} />
-              <Buttons.secondary onClick={onBack} title="Back to Cart" disabled={isSubmitting} />
+              <Buttons.primary onClick={handleContinue} title="Continue to Payment" />
+              <Buttons.secondary onClick={onBack} title="Back to Cart" />
             </>
           ) : null}
         </div>
