@@ -259,15 +259,15 @@ export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FE
   )
 }
 
-export const SuccessMessage = ({ orderNumber, paymentId, handleOrderAgain }: { orderNumber: number | null, paymentId?: string | null, handleOrderAgain: () => void }) =>
+export const SuccessMessage = ({ orderNumber, handleOrderAgain }: { orderNumber: string | null, handleOrderAgain: () => void }) =>
   orderNumber !== null && (
     <div style={styles.modalBody}>
       <div style={styles.successScreen}>
         <div style={styles.successIcon}>✓</div>
         <h2>Thank You!</h2>
         <p>Your order has been placed successfully.</p>
-        <div style={styles.orderNumber}>Order #{orderNumber}</div>
-        {paymentId ? <div style={styles.paymentId}>Payment ID: {paymentId}</div> : null}
+        <div style={styles.orderNumber}>Order #:</div>
+        <div style={styles.orderNumberValue}>{orderNumber}</div>
         <p>Estimated delivery: <strong>30-45 mins</strong></p>
         <br />
         <Buttons.primary onClick={handleOrderAgain} title="Still Hungry?" />

@@ -39,7 +39,7 @@ export const App = () => {
   const [editingCartItemId, setEditingCartItemId] = useState<number | null>(null)
   const [form, setForm] = useState<OrderForm>(emptyForm)
   const [error, setError] = useState('')
-  const [orderNumber, setOrderNumber] = useState<number | null>(null)
+  const [orderNumber, setOrderNumber] = useState<string | null>(null)
   const [isPickup, setIsPickup] = useState(false)
   const [viewOnly, setViewOnly] = useState(false)
   const [loading, setLoading] = useState(false)

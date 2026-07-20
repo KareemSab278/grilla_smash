@@ -55,7 +55,9 @@ export type MenuResponse = {
 export type Extra = {
     name: string
     price: number
+    category?: string
     isProtein?: boolean
+    is_protein?: boolean
 }
 
 export type MealOption = {

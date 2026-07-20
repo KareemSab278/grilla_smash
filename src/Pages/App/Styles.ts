@@ -408,6 +408,12 @@ export const styles: Record<string, CSSProperties> = {
     color: 'var(--white)',
     margin: '20px 0',
   },
+  orderNumberValue: {
+    fontFamily: "'Bebas Neue', sans-serif",
+    fontSize: '2rem',
+    color: 'var(--orange)',
+    marginBottom: '20px',
+  },
   paymentId: {
     color: '#ccc',
     fontSize: '0.92rem',

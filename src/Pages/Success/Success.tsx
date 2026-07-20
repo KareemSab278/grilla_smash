@@ -35,8 +35,7 @@ const getPaymentIdFromQuery = () => {
 
 export const Success = () => {
     const navigate = useNavigate()
-    const [orderNumber, setOrderNumber] = useState<number | null>(null)
-    const [paymentId, setPaymentId] = useState<string | null>(null)
+    const [orderNumber, setOrderNumber] = useState<string | null>(null)
     const [statusMessage, setStatusMessage] = useState('Finalizing your order...')
 
     useEffect(() => {
@@ -44,12 +43,11 @@ export const Success = () => {
             const pendingOrder = parsePendingOrder()
             if (!pendingOrder) {
                 setStatusMessage('Payment succeeded, but no pending order was found.')
-                setOrderNumber(0)
+                setOrderNumber(null)
                 return
             }
 
             const parsedPaymentId = getPaymentIdFromQuery()
-            setPaymentId(parsedPaymentId ?? pendingOrder.paymentId ?? null)
             const payload: KdsOrderPayload = {
                 ...pendingOrder,
                 paymentId: parsedPaymentId ?? pendingOrder.paymentId,
@@ -60,31 +58,33 @@ export const Success = () => {
             try {
                 const result = await orders.new(payload)
                 if (result.order_id) {
-                    setOrderNumber(Number(result.order_id) || 0)
+                    setOrderNumber(result.order_id)
                     setStatusMessage('Order created successfully.')
                     sessionStorage.removeItem(ORDER_STORAGE_KEY)
                 } else {
                     setStatusMessage(result.message || 'Payment succeeded, but order ID was not returned.')
-                    setOrderNumber(0)
+                    setOrderNumber(null)
                 }
             } catch (error) {
                 console.error('Error submitting order after payment:', error)
                 setStatusMessage('Payment succeeded, but order submission failed. Please contact support.')
-                setOrderNumber(0)
+                setOrderNumber(null)
             }
         }
 
         void submitOrder()
     }, [])
-    
+
     const handleOrderAgain = () => {
         navigate('/')
     }
 
     return (
         <>
-            <SuccessMessage orderNumber={orderNumber ?? 0} paymentId={paymentId} handleOrderAgain={handleOrderAgain} />
-            <p style={{ color: '#ccc', textAlign: 'center', marginTop: 12 }}>{statusMessage}</p>
+            <SuccessMessage
+                orderNumber={orderNumber}
+                handleOrderAgain={handleOrderAgain}
+            />
         </>
     )
 }

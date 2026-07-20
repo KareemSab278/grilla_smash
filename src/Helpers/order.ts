@@ -3,14 +3,29 @@ import type { KdsOrderPayload, orderResponse } from '../Types';
 
 export const orders = {
     new: async (order: KdsOrderPayload): Promise<orderResponse> => {
-        console.log('Making order with payload:', order);
+        const payloadToSend = {
+            ...order,
+            orderData: {
+                ...order.orderData,
+                items: order.orderData.items.map((item) => ({
+                    ...item,
+                    extras: item.extras?.map((extra) => ({
+                        ...extra,
+                        is_protein: extra.is_protein ?? extra.isProtein,
+                        isProtein: extra.isProtein ?? extra.is_protein,
+                    })),
+                })),
+            },
+        }
+
+        console.log('[Order] payload sent to backend:', JSON.stringify(payloadToSend, null, 2));
         try {
             const response = await API.post('orders', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(order),
+                body: JSON.stringify(payloadToSend),
             });
 
             console.log('Order response:', response);
