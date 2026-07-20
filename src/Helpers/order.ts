@@ -3,6 +3,7 @@ import type { KdsOrderPayload, orderResponse } from '../Types';
 
 export const orders = {
     new: async (order: KdsOrderPayload): Promise<orderResponse> => {
+        console.log('Making order with payload:', order);
         try {
             const response = await API.post('orders', {
                 method: 'POST',

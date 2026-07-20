@@ -23,6 +23,7 @@ export const chickenSauceOptions: string[] = ['Lemon & Herb', 'Mild', 'Wild', 'H
 
 export const products: Product[] = []
 
+
 export const mealSideOptions: MealOption[] = []
 
 export const drinkOptions: MealOption[] = []
@@ -56,6 +57,7 @@ export const getMenu = async (): Promise<MenuResponse> => {
 
         const liveMealSideOptions = normalizeMealOptions(response.mealSideOptions ?? [])
         mealSideOptions.splice(0, mealSideOptions.length, ...liveMealSideOptions)
+        console.log('Live meal side options:', liveMealSideOptions)
 
         const liveDrinkOptions = normalizeMealOptions(response.drinkOptions ?? [])
         drinkOptions.splice(0, drinkOptions.length, ...liveDrinkOptions)

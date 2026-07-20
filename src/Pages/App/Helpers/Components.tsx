@@ -249,7 +249,7 @@ export const CartSection = ({ cart, updateQuantity, subtotal, total, DELIVERY_FE
           <div style={styles.cartTotalFinal}><span>Total</span><span>£{total.toFixed(2)}</span></div>
           <div style={styles.cartActions}>
 
-            {!hasMissingChickenSauce && <Buttons.primary onClick={openCheckout} title="Checkout" />}
+            {!hasMissingChickenSauce && <Buttons.primary onClick={() => {openCheckout(); console.log('Cart body: ', cart)}} title="Checkout" />}
 
             <Buttons.secondary onClick={closeModal} title="Keep Shopping" />
           </div>
