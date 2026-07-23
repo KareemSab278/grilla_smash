@@ -54,7 +54,7 @@ export const Success = () => {
             console.log('[Order] sending to backend:', JSON.stringify(payload, null, 2))
 
             try {
-                const result = await orders.new(payload)
+                const result = await orders.new(payload as KdsOrderPayload)
                 if (result.order_id) {
                     setOrderNumber(result.order_id)
                     sessionStorage.removeItem(ORDER_STORAGE_KEY)

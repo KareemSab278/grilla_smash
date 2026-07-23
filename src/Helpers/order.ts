@@ -17,9 +17,14 @@ export const orders = {
                     })),
                 })),
             },
+            paymentId: order.paymentId ?? 'ERROR GETTING PAYMENT ID',
         }
 
         console.log('[Order] payload sent to backend:', JSON.stringify(payloadToSend, null, 2));
+        console.log("=====================================");
+        console.log('[Order] payload.paymentId sent to backend (raw):', payloadToSend.paymentId);
+
+
         try {
             const response = await API.post('orders', {
                 method: 'POST',

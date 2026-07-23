@@ -1,5 +1,3 @@
-
-
 export type MenuProduct = {
     id: number;
     name: string;
@@ -111,7 +109,7 @@ export type CartItem = {
 export type KdsOrderPayload = {
     UID: string
     TEL?: string
-    paymentId?: string
+    paymentId: string
     orderData: orderData
 }
 
@@ -130,15 +128,6 @@ export type orderResponse = {
     message?: string
     error?: string
 }
-
-
-// export type MenuOption = {
-//     name: string;
-//     price: number;
-//     is_protein?: boolean;
-//     isProtein?: boolean;
-//     category?: string;
-// };
 
 
 export type Extra = {
@@ -167,9 +156,9 @@ export type PayloadToSend = {
         isPickup: boolean;
         customer: customerInfo;
         storeId: string;
-        status?: "pending" | "confirmed" | "completed" | "cancelled";
+        status?: "pending" | string;
     };
     UID: string;
     TEL?: string;
-    paymentId?: string;
+    paymentId: string; // MUST HAVE A PAYMENT ID. OTHERWISE CANNOT REFUND!
 }
