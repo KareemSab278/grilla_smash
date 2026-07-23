@@ -1,12 +1,12 @@
 import { API } from './API';
-import type { MenuResponse, MenuProduct, MenuOption, MealOption, Product } from '../Types';
+import type { MenuResponse, MenuProduct, Extra, MealOption, Product } from '../Types';
 
 
 export const extrasByCategory: {
-    burgers: MenuOption[]
-    wraps: MenuOption[]
-    chicken: MenuOption[]
-    'loaded-fries': MenuOption[]
+    burgers: Extra[]
+    wraps: Extra[]
+    chicken: Extra[]
+    'loaded-fries': Extra[]
 } = {
     burgers: [],
     wraps: [],
@@ -37,14 +37,15 @@ const normalizeMealOptions = (items: { id?: number; name: string; price: number 
         price: item.price,
     }))
 
-const normalizeExtras = (items: any[] = []): MenuOption[] =>
+const normalizeExtras = (items: any[] = []): Extra[] =>
     items.map((item) => ({
+        id: item?.id,
         name: item.name,
         price: item.price,
         category: item.category,
         is_protein: item.is_protein ?? item.isProtein,
         isProtein: item.isProtein ?? item.is_protein,
-    }))
+    })) as Extra[]
 
 
 export const getMenu = async (): Promise<MenuResponse> => {
@@ -72,7 +73,7 @@ export const getMenu = async (): Promise<MenuResponse> => {
         const normalizedExtras = Object.entries(liveExtras as Record<string, any[]>).reduce((acc, [category, items]) => {
             acc[category] = normalizeExtras(items)
             return acc
-        }, {} as Record<string, MenuOption[]>)
+        }, {} as Record<string, Extra[]>)
         Object.assign(extrasByCategory, normalizedExtras)
 
         const liveMealOptions = response.mealOptions ?? []

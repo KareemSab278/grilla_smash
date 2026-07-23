@@ -36,13 +36,11 @@ const getPaymentIdFromQuery = () => {
 export const Success = () => {
     const navigate = useNavigate()
     const [orderNumber, setOrderNumber] = useState<string | null>(null)
-    const [statusMessage, setStatusMessage] = useState('Finalizing your order...')
 
     useEffect(() => {
         const submitOrder = async () => {
             const pendingOrder = parsePendingOrder()
             if (!pendingOrder) {
-                setStatusMessage('Payment succeeded, but no pending order was found.')
                 setOrderNumber(null)
                 return
             }
@@ -59,15 +57,12 @@ export const Success = () => {
                 const result = await orders.new(payload)
                 if (result.order_id) {
                     setOrderNumber(result.order_id)
-                    setStatusMessage('Order created successfully.')
                     sessionStorage.removeItem(ORDER_STORAGE_KEY)
                 } else {
-                    setStatusMessage(result.message || 'Payment succeeded, but order ID was not returned.')
                     setOrderNumber(null)
                 }
             } catch (error) {
                 console.error('Error submitting order after payment:', error)
-                setStatusMessage('Payment succeeded, but order submission failed. Please contact support.')
                 setOrderNumber(null)
             }
         }

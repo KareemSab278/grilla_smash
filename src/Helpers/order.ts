@@ -1,9 +1,10 @@
 import { API } from './API';
-import type { KdsOrderPayload, orderResponse } from '../Types';
+import type { KdsOrderPayload, orderResponse, PayloadToSend } from '../Types';
+
 
 export const orders = {
     new: async (order: KdsOrderPayload): Promise<orderResponse> => {
-        const payloadToSend = {
+        const payloadToSend: PayloadToSend = {
             ...order,
             orderData: {
                 ...order.orderData,
@@ -25,7 +26,7 @@ export const orders = {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(payloadToSend),
+                body: JSON.stringify(payloadToSend as PayloadToSend),
             });
 
             console.log('Order response:', response);

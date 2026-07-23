@@ -16,7 +16,7 @@ type NearestResult = {
 
 const LOCATIONS: Branch[] = await branch.getBranches();
 
-const MAX_RADIUS_KM = 10;
+const MAX_RADIUS_KM = 15;
 
 const GEOLOCATION_OPTIONS: PositionOptions = {
     enableHighAccuracy: true,

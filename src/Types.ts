@@ -11,15 +11,6 @@ export type MenuProduct = {
 };
 
 
-export type MenuOption = {
-    name: string;
-    price: number;
-    is_protein?: boolean;
-    isProtein?: boolean;
-    category?: string;
-};
-
-
 export type Branch = {
     id: string;
     name: string;
@@ -36,13 +27,10 @@ export type MenuResponse = {
     drinkOptions: MealOption[];
 
     extrasByCategory: {
-        burgers: MenuOption[];
-        wraps: MenuOption[];
-        chicken: {
-            name: string;
-            price: number;
-        }[];
-        "loaded-fries": MenuOption[];
+        burgers: Extra[];
+        wraps: Extra[];
+        chicken: Extra[];
+        "loaded-fries": Extra[];
     };
 
     mealOptions: {
@@ -50,15 +38,6 @@ export type MenuResponse = {
         price: number;
     }[];
 };
-
-
-export type Extra = {
-    name: string
-    price: number
-    category?: string
-    isProtein?: boolean
-    is_protein?: boolean
-}
 
 export type MealOption = {
     id: number
@@ -150,4 +129,47 @@ export type orderResponse = {
     order_id?: string
     message?: string
     error?: string
+}
+
+
+// export type MenuOption = {
+//     name: string;
+//     price: number;
+//     is_protein?: boolean;
+//     isProtein?: boolean;
+//     category?: string;
+// };
+
+
+export type Extra = {
+    id?: number;
+    name: string;
+    price: number;
+    category?: string | undefined;
+    isProtein?: boolean | undefined;
+    is_protein?: boolean | undefined;
+}
+
+
+export type PayloadToSend = {
+    orderData: {
+        items: {
+            extras: Extra[] | undefined;
+            id: number;
+            product: Product;
+            quantity: number;
+            meal?: MealSelection | null;
+            sauceChoice?: string;
+        }[];
+        total: number;
+        delivery: number;
+        subtotal: number;
+        isPickup: boolean;
+        customer: customerInfo;
+        storeId: string;
+        status?: "pending" | "confirmed" | "completed" | "cancelled";
+    };
+    UID: string;
+    TEL?: string;
+    paymentId?: string;
 }
